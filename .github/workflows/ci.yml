@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Repository checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: pip install --upgrade pip nbformat
+
+      - name: Validate notebooks and Python files
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          import ast
+          import sys
+          from pathlib import Path
+
+          import nbformat
+          from nbformat.validator import NotebookValidationError
+
+          root = Path(".")
+          skip_dirs = {
+              ".git",
+              ".venv",
+              "venv",
+              "__pycache__",
+              ".ipynb_checkpoints",
+              "node_modules",
+          }
+
+          def should_skip(path: Path) -> bool:
+              return any(part in skip_dirs for part in path.parts)
+
+          errors: list[str] = []
+          notebook_count = 0
+          python_count = 0
+
+          notebooks = sorted(
+              p for p in root.rglob("*.ipynb") if p.is_file() and not should_skip(p)
+          )
+          if not notebooks:
+              errors.append("No .ipynb files found in the repository.")
+
+          for path in notebooks:
+              notebook_count += 1
+              try:
+                  nb = nbformat.read(path, as_version=4)
+                  nbformat.validate(nb)
+              except (NotebookValidationError, ValueError, OSError) as exc:
+                  errors.append(f"{path}: invalid notebook ({exc})")
+                  continue
+
+              if not nb.cells:
+                  errors.append(f"{path}: notebook has no cells")
+                  continue
+
+              # Catch empty shells left behind during stub/primary cleanup.
+              if all(
+                  not (c.source or "").strip()
+                  for c in nb.cells
+                  if c.cell_type in {"code", "markdown"}
+              ):
+                  errors.append(f"{path}: notebook has only empty cells")
+
+              print(f"OK  notebook  {path} ({len(nb.cells)} cells)")
+
+          python_files = sorted(
+              p for p in root.rglob("*.py") if p.is_file() and not should_skip(p)
+          )
+          for path in python_files:
+              python_count += 1
+              try:
+                  source = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  errors.append(f"{path}: not valid UTF-8")
+                  continue
+              try:
+                  ast.parse(source, filename=str(path))
+              except SyntaxError as exc:
+                  errors.append(f"{path}: Python syntax error ({exc.msg} at line {exc.lineno})")
+                  continue
+              print(f"OK  python    {path}")
+
+          print()
+          print(f"Checked {notebook_count} notebook(s) and {python_count} Python file(s).")
+
+          if errors:
+              print("\nFailures:")
+              for err in errors:
+                  print(f"::error::{err}")
+              sys.exit(1)
+
+          print("All checks passed.")
+          PY
