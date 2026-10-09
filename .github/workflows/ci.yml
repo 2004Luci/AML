@@ -76,7 +76,7 @@ jobs:
                   errors.append(f"{path}: notebook has no cells")
                   continue
 
-              # Catch empty shells left behind during stub/primary cleanup.
+              # Catch empty notebook shells left behind during cleanup.
               if all(
                   not (c.source or "").strip()
                   for c in nb.cells

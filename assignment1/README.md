@@ -1,75 +1,66 @@
-# Assignment 1: From Dirty Data to Predictive Models
+# Assignment 1
 
-Columbia AML — end-to-end supervised learning: clean messy data, engineer features, train models, evaluate, and write up results.
+This folder holds the completed work for **Assignment 1: From Dirty Data to Predictive Models**, using the Kaggle Titanic survival dataset.
 
-## Objective
+## Layout
 
-Build a complete pipeline that turns a real dataset into predictive models:
+```
+assignment1/
+├── Assignment1.pdf              # Official assignment handout
+├── AGENTS.md                    # Workflow / AI guardrails used while building the work
+├── README.md                    # This file
+├── data/                        # Titanic CSVs used by the notebook
+│   ├── train.csv
+│   ├── test.csv
+│   └── gender_submission.csv
+├── notebook/
+│   └── assign1-ms7556.ipynb     # Final runnable notebook (UNI: ms7556)
+└── report/
+    └── Assignment1_Report.pdf   # Final written report (no code)
+```
 
-- Clean and transform data with missing values, noise, and categorical variables
-- Engineer features to improve performance
-- Train and compare **Naive Bayes** (generative) and **Linear Regression** (discriminative, used as a binary classifier)
-- Evaluate with metrics and visualizations
-- Reflect on the workflow and disclose AI tool use
+## What each part contains
 
-## Datasets (pick one)
+### `Assignment1.pdf`
 
-| Dataset | Task | Link |
-|--------|------|------|
-| **Titanic Survival** | Predict passenger survival | [Kaggle Titanic](https://www.kaggle.com/competitions/titanic/data) (Kaggle account required) |
-| **Heart Disease** | Predict presence of heart disease | [UCI Heart Disease](https://archive.ics.uci.edu/dataset/45/heart+disease) |
+The course specification for Assignment 1. It defines the required end-to-end pipeline (cleaning → feature engineering → model training → evaluation → report) and the submission rules for the notebook and PDF.
 
-## Required steps
+### `AGENTS.md`
 
-1. **Data cleaning** — handle missing values (impute / drop / flag), fix noisy or inconsistent values, and justify choices  
-2. **Feature engineering** — normalize / standardize / log-scale; encode categoricals; optional new features (ratios, group stats)  
-3. **Model training** (same train/test split for fair comparison)  
-   - **Naive Bayes** (`BernoulliNB` or `GaussianNB`) with Laplace smoothing; try **at least two** `alpha` values (e.g. `1.0` vs `0.01`)  
-   - **Linear Regression** as binary classification with threshold `0.5`; encouraged: Ridge (L2) and LASSO (L1)  
-4. **Model evaluation**  
-   - Required: accuracy + confusion matrix  
-   - Encouraged: precision, recall, F1  
-   - Bonus: ROC + AUC  
-   - At least one visualization; discuss smoothing vs no smoothing  
-5. **Report** (10–12 pages) — analysis only; **no code** in the PDF  
+Local instructions that governed how the notebook and report were produced with AI assistance: assignment-first compliance, leakage-safe preprocessing, and the final report expectations.
 
-## Submission
+### `data/`
 
-| Deliverable | Notes |
-|-------------|--------|
-| Runnable Jupyter / Colab notebook (`.ipynb`) | All code lives here |
-| PDF report (10–12 pages) | Analysis and insights only |
+Local copies of the Titanic files used by the notebook:
 
-**Report page 1 must include:**
+| File | Role |
+|------|------|
+| `train.csv` | Labeled passenger rows used for the stratified train/test split, cleaning, modeling, and evaluation |
+| `test.csv` | Unlabeled Kaggle test set (present for completeness; modeling and metrics in this assignment use the labeled split from `train.csv`) |
+| `gender_submission.csv` | Sample Kaggle submission format |
 
-- Colab link  
-- Page map for Steps 1–5 and the AI Disclosure  
+### `notebook/assign1-ms7556.ipynb`
 
-**Report structure:** Introduction → Data Cleaning → Feature Engineering → Model Comparison → Discussion → AI Tool Usage Disclosure  
+The final consolidated Jupyter notebook for this assignment. It covers:
 
-**Formatting rules:**
+1. Data loading and quality audit  
+2. Leakage-safe cleaning and imputation (fit on train, transform train and held-out test)  
+3. Feature engineering and the two feature views used by Naive Bayes and the linear models  
+4. Training of Bernoulli Naive Bayes (multiple smoothing strengths), Linear Regression, Ridge, and LASSO  
+5. Evaluation (accuracy with uncertainty, precision/recall/F1, confusion matrices, ROC/AUC) and the smoothing / small-sample diagnostics  
 
-- Embed all plots/figures in the PDF (graders will not open the notebook for graphs)  
-- No code in the report body or appendix  
+All code, figures, and in-notebook explanations for the submission live here.
 
-## Suggested stack
+### `report/Assignment1_Report.pdf`
 
-- **Libraries:** `scikit-learn`, `pandas`, `numpy`, `matplotlib` / `seaborn`  
-- **Split / metrics:** `train_test_split`, `classification_report`, `confusion_matrix` (`cross_val_score` optional)  
-- **Models:** `BernoulliNB` / `GaussianNB`, `LinearRegression` (+ Ridge / LASSO)  
-- **Plots:** seaborn heatmap for confusion matrix; optional `roc_curve` / `auc` for ROC  
+The written report for submission (analysis only; no code). It includes:
 
-## Grading rubric
+- Title page with author, Colab notebook line, page map, and summary  
+- Introduction, Data Cleaning, Feature Engineering, Model Comparison, Discussion  
+- AI Tool Usage Disclosure  
 
-| Category | Weight |
-|----------|--------|
-| Data Cleaning & Transformation | 20% |
-| Feature Engineering | 20% |
-| Model Implementation | 20% |
-| Evaluation & Visualization | 15% |
-| Discussion & Interpretation | 15% |
-| AI Tool Usage Disclosure | 10% |
+Figures from the notebook are embedded in the PDF.
 
-## AI use
+## Related paths outside this folder
 
-AI tools are allowed and expected. You must still understand every line you submit, and the report must disclose which tools you used, what they contributed, and what you did yourself.
+Repository-level CI lives under `.github/workflows/` at the repo root and validates notebooks/Python across all assignments, not only this folder.

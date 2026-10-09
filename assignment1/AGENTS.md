@@ -4,19 +4,17 @@
 
 This repository contains the work for **Assignment 1: From Dirty Data to Predictive Models**.
 
-### Required notebook locations
+### Notebook location
 
-Maintain the two notebook tracks in these exact directories:
+Keep assignment notebooks under:
 
-- **Primary/submission notebooks:** `/notebook/primary/`
-- **Learning/maintenance notebooks:** `/notebook/stub/`
+- `/notebook/`
 
-For step `N`, use:
+The final submission notebook for this assignment is:
 
-- `/notebook/primary/assign1-titanic_step<N>_submission.ipynb`
-- `/notebook/stub/assign1-titanic_step<N>_learning.ipynb`
+- `/notebook/assign1-ms7556.ipynb`
 
-Do not place the step-specific notebooks elsewhere unless explicitly requested.
+Step-wise intermediate notebooks are optional and, if used, should also live under `/notebook/`.
 
 The authoritative assignment specification is `Assignment1.pdf`. Treat that PDF as the source of truth for:
 
@@ -35,7 +33,7 @@ The assignment's primary technical deliverable is the **runnable `.ipynb` notebo
 
 # 1. Non-Negotiable User Workflow
 
-For EVERY assignment step, follow this three-part workflow.
+For EVERY assignment step, follow this workflow.
 
 ## Part A — Detailed explanation in chat
 
@@ -60,19 +58,15 @@ Do not assume the student already understands practical ML.
 
 ---
 
-## Part B — Submission notebook
+## Part B — Assignment notebook
 
-Create/maintain a **submission-quality `.ipynb`** for each step.
-
-Naming convention:
-
-`/notebook/primary/assign1-titanic_step<N>_submission.ipynb`
+Create/maintain a **submission-quality `.ipynb`** under `/notebook/`.
 
 This notebook is the PRIMARY DELIVERABLE.
 
 Treat the notebook as if it were a production-quality data-science codebase.
 
-The submission notebook should:
+The notebook should:
 
 - be runnable top-to-bottom
 - be reproducible
@@ -89,35 +83,7 @@ The submission notebook should:
 - make important decisions explicit
 - comply with `Assignment1.pdf`
 
-"Production-style" does NOT mean removing all explanation. The notebook must still contain enough professional Markdown to explain methodology, decisions, and interpretation.
-
----
-
-## Part C — Learning/maintenance notebook
-
-Create/maintain a SECOND notebook for the student's learning and report preparation.
-
-Naming convention:
-
-`/notebook/stub/assign1-titanic_step<N>_learning.ipynb`
-
-This notebook is NOT the primary submission artifact.
-
-It should contain:
-
-- detailed explanations
-- TODOs
-- learning notes
-- conceptual reminders
-- "why are we doing this?" notes
-- questions the student should be able to answer
-- report-writing prompts
-- places to record observations
-- reminders about assignment/rubric compliance
-
-The learning notebook may be verbose and pedagogical.
-
-It should use the same correct implementation as the submission notebook, but with additional educational material.
+"Production-style" does NOT mean removing all explanation. The notebook must still contain enough professional Markdown to explain methodology, decisions, and interpretation. Explanations for the student may also be given in chat.
 
 ---
 
@@ -599,29 +565,13 @@ Explain the step thoroughly in chat before making substantial changes.
 
 Cover beginner concepts and rationale.
 
-## Phase 3 — Submission notebook
+## Phase 3 — Update the assignment notebook
 
-Create/update:
+Create/update the notebook under `/notebook/` (for this assignment, `assign1-ms7556.ipynb` or a clearly named step notebook in the same folder).
 
-`assign1-titanic_step<N>_submission.ipynb`
+Keep it production-style and assignment-compliant. Put learning/report notes in chat or Markdown cells as needed.
 
-Keep it production-style and assignment-compliant.
-
-## Phase 4 — Learning notebook
-
-Create/update:
-
-`assign1-titanic_step<N>_learning.ipynb`
-
-Add:
-
-- TODOs
-- learning notes
-- conceptual explanations
-- report prompts
-- questions to self-test
-
-## Phase 5 — Run/verify
+## Phase 4 — Run/verify
 
 Never fabricate outputs.
 
@@ -629,7 +579,7 @@ If a result depends on runtime execution, say so and have the user run it in Col
 
 After execution, inspect actual outputs before making data-dependent decisions.
 
-## Phase 6 — Checkpoint
+## Phase 5 — Checkpoint
 
 Before proceeding, confirm:
 
