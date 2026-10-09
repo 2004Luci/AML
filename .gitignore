@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+.Python
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+.jupyter/
+profile_default/
+ipython_config.py
+
+# IDEs / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local / temp
+*.log
+.cache/
+tmp/
+temp/
