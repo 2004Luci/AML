@@ -1,0 +1,22 @@
+---
+description: Assignment 1 workflow, notebook-first guardrails, and three-part step procedure
+alwaysApply: true
+---
+
+Follow the repository `AGENTS.md` for the complete Assignment 1 workflow and guardrails.
+
+The non-negotiable workflow for every step is:
+
+1. Explain the step thoroughly in chat, including beginner concepts, rationale, alternatives, assignment compliance, and report implications.
+2. Maintain a production/submission-quality notebook at `/notebook/primary/assign1-titanic_step<N>_submission.ipynb`.
+3. Maintain a separate learning/report-preparation notebook at `/notebook/stub/assign1-titanic_step<N>_learning.ipynb`.
+
+Do not save the step-specific notebooks outside these directories unless explicitly requested.
+
+The `.ipynb` is the PRIMARY deliverable. Treat `Assignment1.pdf` as the authoritative specification.
+
+Never fabricate results. Never silently change datasets or assignment requirements. Preserve the scaffold's useful structure, but replace example/stub decisions with decisions justified by the actual data and the PDF.
+
+For every new step: inspect the current notebook and actual outputs, explain the step, make the smallest necessary notebook changes, keep the submission notebook production-style, add detailed learning notes to the learning notebook, and verify that the notebook remains runnable.
+
+All assignment-specific details, required models/metrics, report rules, rubric, data-leakage rules, and current dataset findings are documented in `AGENTS.md`.
