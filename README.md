@@ -1,4 +1,3 @@
-Github Home for all asignments of AML
+# Github Home for asignments of COMS W4995 Applied Machine Learning.
 
 
-temp
