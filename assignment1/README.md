@@ -14,7 +14,7 @@ assignment1/
 │   ├── test.csv
 │   └── gender_submission.csv
 ├── notebook/
-│   └── assign1-ms7556.ipynb     # Final runnable notebook (UNI: ms7556)
+│   └── assign1-ms7556.ipynb     # Final runnable notebook
 └── report/
     └── Assignment1_Report.pdf   # Final written report (no code)
 ```
@@ -63,4 +63,4 @@ Figures from the notebook are embedded in the PDF.
 
 ## Related paths outside this folder
 
-Repository-level CI lives under `.github/workflows/` at the repo root and validates notebooks/Python across all assignments, not only this folder.
+Repository-level CI lives under `.github/workflows/` at the repo root and validates notebooks/Python across all assignments.
