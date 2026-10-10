@@ -1,19 +1,17 @@
 ---
-description: Assignment 1 workflow, notebook-first guardrails, and step procedure
+description: Assignment 1 workflow and notebook-first guardrails
 alwaysApply: true
 ---
 
-Follow the repository `AGENTS.md` for the complete Assignment 1 workflow and guardrails.
+Follow `AGENTS.md` for Assignment 1 guardrails.
 
-The non-negotiable workflow for every step is:
+For every meaningful change:
 
-1. Explain the step thoroughly in chat, including beginner concepts, rationale, alternatives, assignment compliance, and report implications.
-2. Maintain a production/submission-quality notebook under `/notebook/` (final file: `assign1-ms7556.ipynb`).
+1. Explain in chat (what, why, alternatives, risks, assignment fit, report impact).
+2. Update the submission notebook under `/notebook/` (`assign1-ms7556.ipynb`).
 
-The `.ipynb` is the PRIMARY deliverable. Treat `Assignment1.pdf` as the authoritative specification.
+The `.ipynb` is the technical deliverable. `Assignment1.pdf` is the authoritative spec.
 
-Never fabricate results. Never silently change datasets or assignment requirements. Preserve the scaffold's useful structure, but replace example/stub decisions with decisions justified by the actual data and the PDF.
+Never invent results. Never silently change the dataset or requirements. Prefer small, justified notebook edits; keep the notebook submission-ready (no checkpoint/meta clutter). Verify with real outputs.
 
-For every new step: inspect the current notebook and actual outputs, explain the step, make the smallest necessary notebook changes, keep the notebook production-style, and verify that it remains runnable.
-
-All assignment-specific details, required models/metrics, report rules, rubric, data-leakage rules, and current dataset findings are documented in `AGENTS.md`.
+Details on models, metrics, leakage, cleaning decisions, report rules, and rubric are in `AGENTS.md`.

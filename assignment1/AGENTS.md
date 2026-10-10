@@ -1,684 +1,290 @@
-# Assignment 1 — AI/ML Workflow Guardrails
+# Assignment 1 — Workflow Guardrails
 
 ## 0. Purpose
 
-This repository contains the work for **Assignment 1: From Dirty Data to Predictive Models**.
+This folder holds **Assignment 1: From Dirty Data to Predictive Models** (COMS W4995 Applied Machine Learning).
 
-### Notebook location
+### Deliverables
 
-Keep assignment notebooks under:
+| Deliverable | Path |
+|---|---|
+| Runnable notebook | `/notebook/assign1-ms7556.ipynb` |
+| Written report (no code) | `/report/Assignment1_Report.pdf` |
+| Assignment handout | `Assignment1.pdf` |
 
-- `/notebook/`
+`Assignment1.pdf` is the source of truth for requirements, models/metrics, report rules, rubric, and AI disclosure.
 
-The final submission notebook for this assignment is:
+The notebook is the technical deliverable: all code, outputs, figures, and technical reasoning live there. The PDF is written from those results. Repository layout is secondary.
 
-- `/notebook/assign1-ms7556.ipynb`
-
-Step-wise intermediate notebooks are optional and, if used, should also live under `/notebook/`.
-
-The authoritative assignment specification is `Assignment1.pdf`. Treat that PDF as the source of truth for:
-
-- objective
-- required workflow
-- required/encouraged/bonus models and metrics
-- report requirements
-- visualization requirements
-- grading rubric
-- AI disclosure requirements
-- submission requirements
-
-The assignment's primary technical deliverable is the **runnable `.ipynb` notebook**. The eventual PDF report is built from the completed notebook's analysis and outputs. GitHub/repository organization is secondary.
+The notebook expects `train.csv` in its working directory (e.g. Colab upload). Do not depend on a local `data/` path inside the notebook.
 
 ---
 
-# 1. Non-Negotiable User Workflow
+# 1. Workflow for each change
 
-For EVERY assignment step, follow this workflow.
+## A — Explain in chat
 
-## Part A — Detailed explanation in chat
+Before a meaningful change, explain:
 
-Before implementing a meaningful step, explain it thoroughly to the student.
+1. What is being done
+2. Why
+3. What problem it solves
+4. What important code means
+5. Alternatives and why this choice
+6. Risks / failure modes
+7. How it satisfies `Assignment1.pdf`
+8. What the student should be able to defend in review
+9. What belongs in the PDF report
 
-Explain even beginner-level/trivial concepts when relevant.
+Do not assume prior ML background.
 
-For each step cover:
+## B — Update the notebook
 
-1. What are we doing?
-2. Why are we doing it?
-3. What problem does it solve?
-4. What does each important line/block mean?
-5. What alternatives exist?
-6. Why did we choose this approach?
-7. What could go wrong?
-8. How does this satisfy the assignment?
-9. What should the student understand for an oral/code review?
-10. What information/results should eventually go into the PDF report?
+Edit `/notebook/assign1-ms7556.ipynb` (or a clearly named notebook under `/notebook/` if the user asks for a separate file).
 
-Do not assume the student already understands practical ML.
+The notebook must:
 
----
-
-## Part B — Assignment notebook
-
-Create/maintain a **submission-quality `.ipynb`** under `/notebook/`.
-
-This notebook is the PRIMARY DELIVERABLE.
-
-Treat the notebook as if it were a production-quality data-science codebase.
-
-The notebook should:
-
-- be runnable top-to-bottom
-- be reproducible
-- use clear variable names
-- use concise, professional comments
-- avoid tutorial-style clutter
-- avoid TODOs/placeholders in final sections
-- contain professional Markdown explaining analytical decisions
-- contain actual outputs/visualizations
-- contain no fabricated results
-- preserve prior working sections
-- avoid unnecessary rewrites
-- avoid dead code and unnecessary imports
-- make important decisions explicit
+- run top-to-bottom without errors
+- be reproducible (`RANDOM_STATE`, documented split)
+- use clear names and short comments only where intent is non-obvious
+- use Markdown for methodology, decisions, and interpretation
+- show real outputs and figures (never invent results)
+- avoid TODOs, placeholders, dead code, and meta/process notes aimed at graders
 - comply with `Assignment1.pdf`
 
-"Production-style" does NOT mean removing all explanation. The notebook must still contain enough professional Markdown to explain methodology, decisions, and interpretation. Explanations for the student may also be given in chat.
+Student-facing teaching can stay in chat. The notebook itself should read as a finished submission, not a tutorial checklist.
 
 ---
 
-# 2. Notebook Hierarchy
+# 2. Priorities
 
-Always prioritize:
+1. `Assignment1.pdf` compliance  
+2. Correctness  
+3. Clear, defensible notebook  
+4. Student understanding  
+5. Report readiness  
+6. Repository polish  
 
-1. **Assignment1.pdf compliance**
-2. **Correctness**
-3. **Final submission `.ipynb` quality**
-4. **Student understanding**
-5. **Report readiness**
-6. Repository organization
-
-Do NOT optimize for:
-
-- Kaggle leaderboard score
-- fancy ML techniques not requested
-- unnecessary hyperparameter searches
-- excessive abstraction
-- a polished README at the expense of the notebook
-- blindly following scaffold examples
+Do not optimize for Kaggle score, unrequested models, heavy tuning, or README polish at the expense of the notebook.
 
 ---
 
-# 3. Assignment Specification
+# 3. Required pipeline
 
-The assignment objective is to build an end-to-end workflow:
+raw data → cleaning → feature engineering → model training → evaluation → interpretation → report
 
-raw data
-→ data cleaning
-→ feature engineering
-→ model training
-→ model evaluation
-→ interpretation
-→ report
+## Data cleaning
 
-The assignment requires:
+- Handle missing values; address inconsistent text if present
+- Justify impute vs drop vs flag
+- Do not invent invalid/noisy values if the audit finds none
 
-## Step 1 — Data Cleaning
+## Feature engineering
 
-- handle missing values
-- address noisy/inconsistent values
-- justify choices such as impute vs. drop vs. flag
+- Appropriate transforms and categorical encoding
+- Optional constructed features only when justified
 
-## Step 2 — Feature Engineering
+## Model training
 
-- appropriate transformations
-- categorical encoding
-- optional meaningful constructed features
+**Naive Bayes:** `BernoulliNB` or `GaussianNB` with Laplace/add-α smoothing; compare at least two α values (e.g. `1.0` and `0.01`).
 
-## Step 3 — Model Training
+**Linear Regression:** required for the binary task with threshold `0.5`. Do not replace it with Logistic Regression.
 
-### Naive Bayes
+**Ridge / LASSO:** encouraged; include when used and explain their role.
 
-Use either:
-
-- `BernoulliNB`
-- `GaussianNB`
-
-depending on the processed feature representation.
-
-Must use Laplace/add-alpha smoothing.
-
-Must experiment with at least two alpha values, e.g.:
-
-- `alpha = 1.0`
-- `alpha = 0.01`
-
-Compare results.
-
-### Linear Regression
-
-Train `LinearRegression`.
-
-The assignment explicitly requires applying Linear Regression to the binary classification task using a threshold of `0.5`.
-
-Do NOT silently replace Linear Regression with Logistic Regression.
-
-### Regularization
-
-Ridge and LASSO are encouraged:
-
-- Ridge = L2 regularization
-- LASSO = L1 regularization
-
-Include them when practical and explain their role.
-
-### Fair comparison
-
-All models must use the SAME train/test split.
+**Fair comparison:** one shared train/test split for every model.
 
 ---
 
-# 4. Model Evaluation Requirements
+# 4. Evaluation
 
-Required:
+| Level | Metrics |
+|---|---|
+| Required | Accuracy, confusion matrix |
+| Encouraged | Precision, recall, F1 |
+| Bonus | ROC, AUC |
 
-- Accuracy
-- Confusion Matrix
+At least one clear visualization (e.g. confusion-matrix heatmap, ROC). Figures used in the PDF must be embedded in the PDF; graders will not open the notebook to find graphs.
 
-Encouraged:
-
-- Precision
-- Recall
-- F1-score
-
-Bonus:
-
-- ROC
-- AUC
-
-At least one meaningful visualization is required.
-
-Suitable visualizations include:
-
-- confusion-matrix heatmap
-- ROC curve
-
-Visualizations must be readable and report-ready.
-
-The assignment explicitly says graphs must be visible in the PDF report; the grader will not open the notebook just to find them.
+Discuss smoothing vs no smoothing with evidence.
 
 ---
 
-# 5. Dataset Guardrail
+# 5. Dataset rules
 
-We selected the **Titanic Survival Dataset**.
+Dataset: **Titanic** (`train.csv` with `Survived`).
 
-Available Kaggle files:
+Kaggle `train.csv` / `test.csv` are **not** the assignment split.
 
-- `train.csv`
-- `test.csv`
-- `gender_submission.csv`
-
-## Important distinction
-
-Kaggle's `train.csv` / `test.csv` are NOT the assignment's train/test split.
-
-For this assignment:
-
-- use `train.csv` as the main labeled dataset
-- `train.csv` contains `Survived`
-- create our OWN train/test split from `train.csv`
-- evaluate on the held-out portion because its true `Survived` values are known
-- use the SAME split for all models
-- do NOT use Kaggle `test.csv` for model evaluation
+- Build the assignment train/test split from labeled `train.csv`
+- Evaluate on the held-out labeled portion
+- Use the same split for all models
+- Do not evaluate on Kaggle `test.csv` (no labels)
 - `gender_submission.csv` is not required
 
-The Kaggle `test.csv` is a separate competition holdout without the target label and is therefore not appropriate for the required accuracy/confusion-matrix evaluation.
+---
+
+# 6. Known audit facts (Titanic `train.csv`)
+
+- 891 × 12  
+- Missing: Cabin 77.10%, Age 19.87%, Embarked 0.22%  
+- Target: 61.62% died / 38.38% survived  
+- No invalid Age/Fare/SibSp/Parch/Pclass/Survived values in the audit  
+
+State audit results honestly; do not fabricate problems.
 
 ---
 
-# 6. Current Dataset Findings
+# 7. Leakage
 
-The actual Titanic `train.csv` audit found:
+Never use `Survived` to build features.
 
-- 891 rows
-- 12 columns
-- `Survived`: 891 non-null
-- `Age`: 714 non-null → 177 missing → 19.87%
-- `Cabin`: 204 non-null → 687 missing → 77.10%
-- `Embarked`: 889 non-null → 2 missing → 0.22%
+For any fit that learns from data (imputation, scaling, encoding categories, bin edges):
 
-Target:
+1. Split first  
+2. Fit on training data only  
+3. Transform train and test with that fit  
 
-- `Survived = 0`: 549 → 61.62%
-- `Survived = 1`: 342 → 38.38%
-
-Numeric validity audit found:
-
-- Age below zero: 0
-- Fare below zero: 0
-- SibSp below zero: 0
-- Parch below zero: 0
-- invalid Pclass: 0
-- invalid Survived: 0
-
-Do not fabricate noisy/invalid values. If the audit finds no invalid numeric values, state that honestly.
+Be able to explain `fit_transform(X_train)` vs `transform(X_test)`.
 
 ---
 
-# 7. Data Leakage Guardrail
+# 8. Feature rules
 
-Prevent data leakage.
+Possible features: `FamilySize`, `IsAlone`, `CabinKnown`, `Title` from `Name`, justified fare transforms.
 
-Never use target information (`Survived`) to create features.
+Include a feature only if it has a clear meaning, no target leakage, and can be defended in the report. Do not add Titanic “tricks” by default.
 
-For preprocessing that learns parameters from data:
-
-- split first where appropriate
-- fit preprocessing on training data
-- transform training data
-- transform test data using the already-fitted preprocessing
-
-Do not calculate train/test-dependent imputation/scaling statistics from the combined dataset.
-
-Be able to explain:
-
-`fit_transform(X_train)` vs. `transform(X_test)`.
+Treat `PassengerId`, raw `Name`, `Ticket`, and sparse raw `Cabin` as non-predictors unless a justified derived feature replaces them.
 
 ---
 
-# 8. Feature Engineering Guardrails
+# 9. Cleaning decisions used in this assignment
 
-Potential Titanic features may include:
-
-- `FamilySize`
-- `IsAlone`
-- `CabinKnown`
-- `Title` extracted from `Name`
-- justified fare-related features
-
-Do NOT add features merely because they are common Titanic tricks.
-
-A feature should be included only if:
-
-1. it has a meaningful interpretation;
-2. it is available without target leakage;
-3. it is technically appropriate;
-4. it can be explained in the report;
-5. it contributes meaningfully or is justified by the assignment.
-
-Raw identifier-like columns such as `PassengerId` should not automatically be used as predictive features.
-
-Be deliberate about `Name`, `Ticket`, and `Cabin`.
-
----
-
-# 9. Cleaning Decision Guardrails
-
-Based on the actual audit:
-
-### Age
-
-19.87% missing.
-
-Likely approach:
-
-- retain rows
-- median imputation
-- fit median on training data only
-
-Explain why median is preferable to blindly dropping approximately 20% of observations.
-
-### Embarked
-
-Only 2 missing values.
-
-Likely approach:
-
-- most-frequent-category imputation
-- fit on training data only
-
-### Cabin
-
-77.10% missing.
-
-Do NOT invent cabin identifiers.
-
-Prefer representing cabin availability as a feature such as:
-
-`CabinKnown = 1 if cabin observed else 0`
-
-Optionally consider deck information if justified.
-
-### Numeric validity
-
-No invalid numeric values were found in the initial audit.
-
-Do not create artificial cleaning operations just to satisfy the rubric.
-
-### Categorical normalization
-
-Normalize whitespace/case where appropriate before encoding.
+| Column | Decision |
+|---|---|
+| `Age` | Median imputation, fit on train only |
+| `Embarked` | Most-frequent imputation, fit on train only |
+| `Cabin` | Do not impute IDs; use `CabinKnown` |
+| Text fields | Trim / normalize case before encoding |
+| Numeric validity | No fabricated corrections |
+| Zero `Fare` | Left as-is; skew handled by transform |
 
 ---
 
 # 10. Reproducibility
 
-Use a fixed random seed, e.g.:
-
-`RANDOM_STATE = 42`
-
-Use a documented test size, e.g.:
-
-`TEST_SIZE = 0.20`
-
-Use the same split for all models.
-
-Stratification by `Survived` may be used if appropriate for maintaining class proportions.
-
-Do not independently split for different models.
+- `RANDOM_STATE = 42`  
+- Documented test size (e.g. `TEST_SIZE = 0.20`)  
+- Same split for all models  
+- Stratify on `Survived` when splitting  
 
 ---
 
-# 11. Notebook Style
+# 11. Notebook writing style
 
-Use this structure:
+Pattern for analysis sections:
 
-Markdown:
-"What are we doing and why?"
+1. Markdown: what and why  
+2. Code: implement  
+3. Output: real result  
+4. Markdown: interpret  
 
-Code:
-"Implement it."
+Prefer small logical cells. Comments explain intent, assumptions, or risks — not restating obvious code.
 
-Output:
-"Show actual result."
-
-Markdown:
-"Interpret the result."
-
-Do not write huge monolithic cells.
-
-Prefer logical, testable cells.
-
-Avoid excessive comments that merely restate obvious code.
-
-Bad:
-
-```python
-# Read the CSV file
-df = pd.read_csv("train.csv")
-```
-
-when the surrounding Markdown already explains it.
-
-Better:
-
-```python
-df = pd.read_csv(TRAIN_PATH)
-```
-
-with a nearby Markdown explanation of why the dataset is being loaded.
-
-Comments should explain intent, non-obvious decisions, assumptions, or risks.
+Avoid submission-noise: “checkpoint”, “current scope”, “notebook goal”, step-handoff notes, and grader checklists.
 
 ---
 
-# 12. Scaffold Rules
+# 12. Report
 
-A scaffolded `assign1-titanic.ipynb` was provided.
+PDF: **10–12 pages**, no code in body or appendix.
 
-Use it as the starting structure.
+Page 1: Colab link; page map for Steps 1–5 and AI Disclosure.
 
-Do NOT blindly accept scaffold/example decisions.
+Structure:
 
-Some scaffold cells may be explicitly marked as examples/stubs.
+1. Introduction  
+2. Data Cleaning  
+3. Feature Engineering  
+4. Model Comparison  
+5. Discussion  
+6. AI Tool Usage Disclosure  
 
-For every example:
-
-- inspect the actual data
-- decide whether the approach is appropriate
-- replace it if necessary
-- document the final decision
-
-Preserve useful scaffold structure unless there is a strong reason to change it.
+Embed all figures in the PDF. All code stays in the `.ipynb`.
 
 ---
 
-# 13. Report Guardrails
+# 13. Rubric weights
 
-The final PDF report must be 10–12 pages.
+- Data Cleaning & Transformation — 20%  
+- Feature Engineering — 20%  
+- Model Implementation — 20%  
+- Evaluation & Visualization — 15%  
+- Discussion & Interpretation — 15%  
+- AI Tool Usage Disclosure — 10%  
 
-Page 1 must include:
-
-- Colab link
-- page map showing where Steps 1–5 and AI Disclosure are covered
-
-Required report content:
-
-1. Introduction
-   - problem definition
-   - dataset description
-
-2. Data Cleaning
-   - steps
-   - reasoning
-   - before/after examples
-
-3. Feature Engineering
-   - transformations
-   - encodings
-   - constructed features
-
-4. Model Comparison
-   - training setup
-   - evaluation results
-
-5. Discussion
-   - interpretation
-   - strengths
-   - limitations
-
-6. AI Tool Usage Disclosure
-   - tools used
-   - what they contributed
-   - what the student contributed
-
-No code blocks in the PDF body or appendix.
-
-All code belongs in the `.ipynb`.
-
-All important graphs, confusion matrices, and figures must be directly embedded in the PDF.
-
-Therefore, notebook visualizations should be generated cleanly enough to reuse in the report.
+Do not chase accuracy at the expense of cleaning, features, interpretation, or disclosure.
 
 ---
 
-# 14. Grading Rubric Guardrail
+# 14. AI disclosure
 
-Optimize for the actual rubric:
+AI use is allowed and must be disclosed in the report.
 
-- Data Cleaning & Transformation — 20%
-- Feature Engineering — 20%
-- Model Implementation — 20%
-- Evaluation & Visualization — 15%
-- Discussion & Interpretation — 15%
-- AI Tool Usage Disclosure — 10%
+Tools used on this work have included ChatGPT, Cursor, and CodeRabbit. Disclosure must accurately separate what AI did from what the student did (direction, review, Colab runs, decisions, ownership of correctness).
 
-Do not spend disproportionate effort optimizing model accuracy while neglecting cleaning, feature engineering, interpretation, and disclosure.
+Do not claim AI-written code or text was independently authored by the student.
 
 ---
 
-# 15. AI Usage Guardrail
+# 15. Change protocol
 
-AI usage is allowed by the assignment.
+When asked to continue or edit:
 
-Do not conceal it.
-
-The final report must transparently disclose AI usage.
-
-Likely tools used:
-
-- ChatGPT
-- Cursor
-
-The disclosure should accurately describe contributions such as:
-
-- starter-code generation
-- code refinement
-- debugging
-- conceptual explanations
-- notebook organization
-
-Do not claim that AI-generated code was independently written by the student.
-
-The student's own contribution includes:
-
-- understanding the workflow
-- reviewing code
-- making/approving decisions
-- running and inspecting results
-- interpreting results
-- writing/validating the analysis
-- preparing the final submission
+1. **Inspect** the current notebook, `Assignment1.pdf`, and real outputs.  
+2. **Explain** the change in chat.  
+3. **Edit** the notebook under `/notebook/` with the smallest sufficient change.  
+4. **Verify** with real runs (user Colab or local). Never invent outputs.  
+5. **Confirm** the change still meets the relevant assignment requirements before moving on.
 
 ---
 
-# 16. Step-by-Step Execution Protocol
+# 16. Do not
 
-When the user asks to proceed to a new step, follow this sequence.
-
-## Phase 1 — Inspect
-
-Inspect:
-
-- current `.ipynb`
-- `Assignment1.pdf`
-- existing outputs
-- current data/results
-- previous step's decisions
-
-Do not assume a previous result if it is not present.
-
-## Phase 2 — Explain
-
-Explain the step thoroughly in chat before making substantial changes.
-
-Cover beginner concepts and rationale.
-
-## Phase 3 — Update the assignment notebook
-
-Create/update the notebook under `/notebook/` (for this assignment, `assign1-ms7556.ipynb` or a clearly named step notebook in the same folder).
-
-Keep it production-style and assignment-compliant. Put learning/report notes in chat or Markdown cells as needed.
-
-## Phase 4 — Run/verify
-
-Never fabricate outputs.
-
-If a result depends on runtime execution, say so and have the user run it in Colab.
-
-After execution, inspect actual outputs before making data-dependent decisions.
-
-## Phase 5 — Checkpoint
-
-Before proceeding, confirm:
-
-- notebook runs
-- no errors
-- requirements for that step are satisfied
-- important outputs are captured
-- report-relevant observations are recorded
+- Rewrite the whole notebook without need  
+- Delete prior analysis casually  
+- Invent results or missing/noisy data  
+- Switch datasets silently  
+- Use Kaggle `test.csv` as the evaluation set  
+- Replace Linear Regression with Logistic Regression  
+- Skip the required α comparison  
+- Fit preprocessing on data that includes the held-out test rows  
+- Different splits per model  
+- Put code in the PDF  
+- Omit AI disclosure  
+- Call a recommendation a hard requirement  
+- Contradict `Assignment1.pdf`  
 
 ---
 
-# 17. Current Step Status
+# 17. Done when
 
-Completed:
+**Notebook**
 
-- dataset selection: Titanic
-- Kaggle files obtained
-- Colab configured
-- scaffolded notebook established
-- Step 0 setup completed
-- Step 1 data audit completed
+- Runs top-to-bottom  
+- Cleaning, features, models, and evaluation match `Assignment1.pdf`  
+- Shared split; Linear Regression at 0.5; ≥2 Naive Bayes α values  
+- Accuracy + confusion matrices; figures present  
+- Smoothing discussed; limitations stated  
+- No fabricated outputs; reproducible  
 
-Actual audit results:
+**Report**
 
-- 891 rows × 12 columns
-- Cabin: 77.10% missing
-- Age: 19.87% missing
-- Embarked: 0.22% missing
-- target: 61.62% class 0 / 38.38% class 1
-- no invalid numeric/domain values found in the audited fields
-
-Next logical work:
-
-**Implement the justified data-cleaning/preprocessing strategy without leakage.**
+- 10–12 pages, embedded figures, no code, page-1 map + Colab link, AI disclosure  
 
 ---
 
-# 18. What Cursor Must NOT Do
+# 18. Tie-break
 
-Do not:
-
-- rewrite the whole notebook unnecessarily
-- delete previous analysis
-- invent results
-- invent missing/noisy data
-- silently switch datasets
-- use Kaggle `test.csv` as the assignment test set
-- replace Linear Regression with Logistic Regression
-- omit the required alpha comparison
-- create separate train/test splits for different models
-- calculate preprocessing statistics using the held-out test data
-- add arbitrary ML techniques
-- optimize for Kaggle leaderboard performance
-- put code into the PDF
-- omit required AI disclosure
-- remove important assignment-required reasoning
-- claim something is required if it is only a recommendation
-- silently contradict `Assignment1.pdf`
-
----
-
-# 19. Definition of Done
-
-The final `.ipynb` is considered ready only when:
-
-- it runs top-to-bottom in Colab;
-- all required assignment steps are present;
-- data-cleaning decisions are justified;
-- feature engineering is justified;
-- categorical variables are appropriately encoded;
-- transformations are appropriate;
-- Naive Bayes is implemented correctly;
-- at least two alpha values are compared;
-- Linear Regression is implemented with the required 0.5 threshold;
-- Ridge/LASSO are included if used and interpreted;
-- all models use the same split;
-- accuracy and confusion matrices are present;
-- meaningful visualizations are present;
-- optional/bonus metrics are correctly implemented if included;
-- smoothing results are discussed;
-- model comparison is fair;
-- limitations are discussed;
-- AI usage disclosure is present;
-- there are no fabricated outputs;
-- the notebook is reproducible;
-- the notebook contains the code and technical reasoning needed to support the PDF report.
-
-The PDF is then created from the stable notebook outputs and must separately comply with the report formatting rules in `Assignment1.pdf`.
-
----
-
-# 20. Final Principle
-
-The goal is NOT merely to make the code execute.
-
-The goal is:
-
-**Produce a technically correct, reproducible, professionally structured, assignment-compliant `.ipynb` that the student understands and can defend, and then use that notebook to produce the required analytical report.**
-
-When in doubt:
-
-**Assignment1.pdf > correctness > notebook quality > student understanding > report readiness > repository polish.**
+**`Assignment1.pdf` > correctness > clear notebook > student understanding > report readiness > repo polish.**
