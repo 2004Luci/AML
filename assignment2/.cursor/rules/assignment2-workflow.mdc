@@ -1,3 +1,30 @@
 ---
+description: Assignment 2 workflow and GBDT-versus-MLP notebook guardrails
 alwaysApply: true
 ---
+
+Follow `AGENTS.md` for the full Assignment 2 guardrails. `Assignment2.pdf` is the authoritative specification.
+
+The primary technical deliverable is one consolidated notebook:
+
+- `/notebook/assign2-ms7556.ipynb`
+
+For every meaningful change:
+
+1. Explain in chat what is changing, why, relevant alternatives/risks, how it satisfies the assignment, and what should be discussed in the report.
+2. Update the submission notebook incrementally. Preserve working sections and keep it runnable, reproducible, and submission-ready.
+3. Validate with real execution outputs. Never invent results or claim cells were run when they were not.
+
+Core assignment constraints:
+
+- The dataset choice is pending. Do not choose or switch datasets silently. Ask before implementing dataset-specific loading. Bank Marketing is described as the simpler option; Home Credit has a required 30,000-row stratified sample before splitting.
+- Use the chosen dataset's exact handout rules. For Bank Marketing, read `bank-additional-full.csv` with `sep=";"`, drop `duration`, and explain `pdays = 999` and literal `unknown` categories. For Home Credit, use only `application_train.csv`, drop `SK_ID_CURR`, separate `TARGET`, and create one 30,000-row TARGET-stratified sample with seed 42 before splitting.
+- Reuse one stratified 70/15/15 train/validation/test split with `random_state=42` for every experiment. Fit learned preprocessing on training data only. One-hot encode nominal categories; scale numeric features for MLP. Keep the same split rows and underlying input information for both models.
+- GBDT: `xgboost.XGBClassifier(tree_method="hist")`; monitor train/validation `logloss`; compare at least three learning rates, then vary `max_depth` and one regularization control; use roughly 6–10 configurations. Put `early_stopping_rounds` and `eval_metric` in the estimator constructor. Pass transformed train and validation data through `eval_set`, with validation last. Include loss curves, feature importance, and a tried-configurations table.
+- MLP: `MLPClassifier(solver="adam")`; compare at least three architectures, then vary `learning_rate_init` and one of `activation` or `alpha`; use roughly 6–10 configurations. Fix/document `max_iter`, capture convergence warnings, and normally use `early_stopping=False`. Include `loss_curve_` and validation performance by architecture.
+- Choose one final configuration per model using validation AP. Compute AP from positive-class probabilities with `average_precision_score`, never thresholded labels or trapezoidal PR area. Do not inspect/use the test set for tuning. After choices are fixed, report test Accuracy, Precision, Recall, F1 at threshold 0.5 and AP from probabilities.
+- Include both PR curves with the test positive-class proportion as reference, confusion matrices, a side-by-side comparison table, final fit times and separate preprocessing times measured on the same runtime, hardware/package versions, and seeds.
+- The PDF report must be 5–7 pages including figures and references, include a page map for Steps 1–5, contain no code, and embed all required figures/tables. Put the Colab link at the very end and verify Columbia LionMail Viewer access.
+- Disclose AI tools accurately and explain the student's own checks and contributions.
+
+Do not optimize for a leaderboard or force either model to win. The handout has no minimum F1/AP score for full credit. See `AGENTS.md` for the complete rubric, report checklist, dataset-specific safeguards, notebook style, and definition of done.

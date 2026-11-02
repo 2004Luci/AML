@@ -1,734 +1,468 @@
-# Assignment 1 — AI/ML Workflow Guardrails
+# Assignment 2 — AI/ML Workflow Guardrails
 
-## 0. Purpose
+## 0. Purpose and source of truth
 
-This repository contains the work for **Assignment 1: From Dirty Data to Predictive Models**.
+This repository contains the work for **Assignment 2: From Trees to Neural Networks**.
 
-### Required notebook locations
+The authoritative specification is `Assignment2.pdf`. It is the source of truth for the objective, permitted datasets, required experiments, evaluation procedure, report requirements, rubric, AI disclosure, and submission/access rules. Do not replace its instructions with generic machine-learning conventions or assumptions from Assignment 1.
 
-Maintain the two notebook tracks in these exact directories:
+### Deliverables
 
-- **Primary/submission notebooks:** `/notebook/primary/`
-- **Learning/maintenance notebooks:** `/notebook/stub/`
+1. A runnable Jupyter/Colab notebook (`.ipynb`) containing setup, data-loading instructions, code, explanations, and outputs needed to reproduce the results.
+2. A **5–7 page PDF report**, including figures and references, submitted on Gradescope. The report must include a page map showing where Steps 1–5 are addressed.
 
-For step `N`, use:
+The Google Colab notebook link must appear **at the very end of the PDF report**. Set notebook sharing so anyone signed in with a Columbia LionMail account can open it as a Viewer without requesting access. Verify this before submission; the handout states that inaccessible notebooks incur a 10-point deduction.
 
-- `/notebook/primary/assign1-titanic_step<N>_submission.ipynb`
-- `/notebook/stub/assign1-titanic_step<N>_learning.ipynb`
+### Primary notebook path
 
-Do not place the step-specific notebooks elsewhere unless explicitly requested.
+Maintain one consolidated submission notebook:
 
-The authoritative assignment specification is `Assignment1.pdf`. Treat that PDF as the source of truth for:
+`/notebook/assign2-ms7556.ipynb`
 
-- objective
-- required workflow
-- required/encouraged/bonus models and metrics
-- report requirements
-- visualization requirements
-- grading rubric
-- AI disclosure requirements
-- submission requirements
-
-The assignment's primary technical deliverable is the **runnable `.ipynb` notebook**. The eventual PDF report is built from the completed notebook's analysis and outputs. GitHub/repository organization is secondary.
+This is the primary technical deliverable. Do not create separate learning/stub notebooks unless the student explicitly asks for them. Repository and README polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
 
 ---
 
-# 1. Non-Negotiable User Workflow
+## 1. Non-negotiable working protocol
 
-For EVERY assignment step, follow this three-part workflow.
+For every meaningful assignment step, follow this sequence.
 
-## Part A — Detailed explanation in chat
+### A. Explain before implementing
 
-Before implementing a meaningful step, explain it thoroughly to the student.
+Explain the work in chat before making substantial notebook changes. Assume the student may be learning the practical concepts for the first time. Cover:
 
-Explain even beginner-level/trivial concepts when relevant.
+1. What is being done and why.
+2. The problem it solves and the underlying concept.
+3. What the important code and parameters mean.
+4. Reasonable alternatives and why the selected approach is appropriate.
+5. Risks, assumptions, and possible failure modes.
+6. How the choice satisfies the assignment.
+7. What the student should be able to explain in a code review/oral discussion.
+8. What outputs, figures, and observations belong in the report.
 
-For each step cover:
+Do not merely paste code without teaching the decision behind it.
 
-1. What are we doing?
-2. Why are we doing it?
-3. What problem does it solve?
-4. What does each important line/block mean?
-5. What alternatives exist?
-6. Why did we choose this approach?
-7. What could go wrong?
-8. How does this satisfy the assignment?
-9. What should the student understand for an oral/code review?
-10. What information/results should eventually go into the PDF report?
+### B. Update the submission notebook
 
-Do not assume the student already understands practical ML.
+Update `/notebook/assign2-ms7556.ipynb` incrementally. Preserve working sections and previous verified decisions. Avoid broad rewrites when a small, targeted edit is sufficient.
 
----
+The notebook must:
 
-## Part B — Submission notebook
+- run top-to-bottom in the intended Jupyter/Colab environment;
+- include setup and clear data-loading instructions;
+- be reproducible through fixed, documented random seeds;
+- use clear names and modular, readable cells;
+- contain professional Markdown explaining methodology and interpretation;
+- include actual, relevant outputs and report-ready figures;
+- avoid tutorial clutter, temporary debugging cells, stale output, and unresolved TODOs in the final version;
+- avoid dead code and unnecessary imports;
+- never contain fabricated results or claims of execution that did not occur.
 
-Create/maintain a **submission-quality `.ipynb`** for each step.
+Production-style does not mean explanation-free. Retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
 
-Naming convention:
+### C. Run, inspect, and checkpoint
 
-`/notebook/primary/assign1-titanic_step<N>_submission.ipynb`
+Never invent runtime-dependent results. Ask the student to run the notebook in Colab when execution is required, then inspect the actual outputs they provide before interpreting results or making subsequent data-dependent decisions.
 
-This notebook is the PRIMARY DELIVERABLE.
-
-Treat the notebook as if it were a production-quality data-science codebase.
-
-The submission notebook should:
-
-- be runnable top-to-bottom
-- be reproducible
-- use clear variable names
-- use concise, professional comments
-- avoid tutorial-style clutter
-- avoid TODOs/placeholders in final sections
-- contain professional Markdown explaining analytical decisions
-- contain actual outputs/visualizations
-- contain no fabricated results
-- preserve prior working sections
-- avoid unnecessary rewrites
-- avoid dead code and unnecessary imports
-- make important decisions explicit
-- comply with `Assignment1.pdf`
-
-"Production-style" does NOT mean removing all explanation. The notebook must still contain enough professional Markdown to explain methodology, decisions, and interpretation.
+At each checkpoint verify that the relevant cells run, outputs are genuine, the assignment requirements for that stage are covered, and report-relevant observations are recorded.
 
 ---
 
-## Part C — Learning/maintenance notebook
-
-Create/maintain a SECOND notebook for the student's learning and report preparation.
-
-Naming convention:
-
-`/notebook/stub/assign1-titanic_step<N>_learning.ipynb`
-
-This notebook is NOT the primary submission artifact.
-
-It should contain:
-
-- detailed explanations
-- TODOs
-- learning notes
-- conceptual reminders
-- "why are we doing this?" notes
-- questions the student should be able to answer
-- report-writing prompts
-- places to record observations
-- reminders about assignment/rubric compliance
-
-The learning notebook may be verbose and pedagogical.
-
-It should use the same correct implementation as the submission notebook, but with additional educational material.
-
----
-
-# 2. Notebook Hierarchy
+## 2. Priority order
 
 Always prioritize:
 
-1. **Assignment1.pdf compliance**
-2. **Correctness**
-3. **Final submission `.ipynb` quality**
-4. **Student understanding**
-5. **Report readiness**
-6. Repository organization
+1. `Assignment2.pdf` compliance.
+2. Technical correctness and leakage prevention.
+3. Fair, controlled GBDT-versus-MLP experiments.
+4. A reproducible, high-quality submission notebook.
+5. Student understanding and ability to defend decisions.
+6. Report readiness and accurate interpretation.
+7. Repository organization and cosmetic polish.
 
-Do NOT optimize for:
+Do not optimize solely for the highest score. The handout explicitly states that neither model is required to win and there is no fixed minimum F1 or AP score for full credit. A defensible experiment and honest analysis are more important than manufacturing a favorable result.
 
-- Kaggle leaderboard score
-- fancy ML techniques not requested
-- unnecessary hyperparameter searches
-- excessive abstraction
-- a polished README at the expense of the notebook
-- blindly following scaffold examples
+Do not add complex techniques, extensive searches, or extra models that are not needed for the assignment.
 
 ---
 
-# 3. Assignment Specification
+## 3. Dataset choice and dataset-specific guardrails
 
-The assignment objective is to build an end-to-end workflow:
+The student must choose **one** of the two datasets. The choice has not yet been recorded. The handout describes Bank Marketing as the simpler option to download and run; both datasets receive the same grading treatment. Do not silently choose a dataset or mix rows/features from the two datasets. Confirm the choice before implementing dataset-specific loading and cleaning. Until then, preserve both paths in documentation and keep dataset-specific notebook code clearly separated or pending.
 
-raw data
-→ data cleaning
-→ feature engineering
-→ model training
-→ model evaluation
-→ interpretation
-→ report
+### Option A — Bank Marketing (simpler handout option)
 
-The assignment requires:
+- Use `bank-additional-full.csv` (41,188 rows) from `bank-additional.zip`.
+- Read the CSV with a semicolon separator (`sep=";"`).
+- Predict whether a client subscribes to a term deposit.
+- Treat `y = "yes"` as the positive class and encode the target consistently as 1; `"no"` is 0.
+- **Drop `duration` from predictors.** It is the completed call duration and is unavailable before the call, so including it would leak information unavailable at prediction time. Do not reintroduce it through derived features.
+- Inspect and explain how literal `unknown` category values are handled. They are dataset values, not automatically the same thing as a previously unseen category.
+- Explain how `pdays = 999` is handled. It means there was no previous contact; do not silently interpret it as 999 elapsed days, discard it, or replace it without preserving/explaining its meaning. A documented indicator plus a justified numeric representation is one possible strategy; other approaches are acceptable if reasoned and applied consistently.
+- A random split does not establish generalization to future campaigns. State this limitation in the report.
+- The handout treats this as a historical benchmark, not evidence of current banking performance.
 
-## Step 1 — Data Cleaning
+### Option B — Home Credit Default Risk
 
-- handle missing values
-- address noisy/inconsistent values
-- justify choices such as impute vs. drop vs. flag
+- Use **`application_train.csv` only**.
+- Predict `TARGET`, where the positive class (`TARGET = 1`) identifies applicants with payment difficulties.
+- Drop `SK_ID_CURR` from predictors and separate `TARGET` from the feature matrix.
+- Before making any train/validation/test split, take a **30,000-row stratified sample using `TARGET` and `random_state = 42`**.
+- Use this exact same 30,000-row sample for every experiment and both model families.
+- Do not join additional Home Credit tables. Do not prepare Kaggle competition submissions; neither is required.
+- A Kaggle account and acceptance of the competition data terms may be required. Follow the source's access and data-use terms.
 
-## Step 2 — Feature Engineering
+### Dataset-neutral rule
 
-- appropriate transformations
-- categorical encoding
-- optional meaningful constructed features
-
-## Step 3 — Model Training
-
-### Naive Bayes
-
-Use either:
-
-- `BernoulliNB`
-- `GaussianNB`
-
-depending on the processed feature representation.
-
-Must use Laplace/add-alpha smoothing.
-
-Must experiment with at least two alpha values, e.g.:
-
-- `alpha = 1.0`
-- `alpha = 0.01`
-
-Compare results.
-
-### Linear Regression
-
-Train `LinearRegression`.
-
-The assignment explicitly requires applying Linear Regression to the binary classification task using a threshold of `0.5`.
-
-Do NOT silently replace Linear Regression with Logistic Regression.
-
-### Regularization
-
-Ridge and LASSO are encouraged:
-
-- Ridge = L2 regularization
-- LASSO = L1 regularization
-
-Include them when practical and explain their role.
-
-### Fair comparison
-
-All models must use the SAME train/test split.
+Whichever option is selected, use only the permitted source file(s), document the source and the actual shape, and never change the dataset or sample silently after experiments begin.
 
 ---
 
-# 4. Model Evaluation Requirements
+## 4. Step 1 — Data preparation
 
-Required:
+The handout requires the following:
 
-- Accuracy
-- Confusion Matrix
+### 4.1 Initial data audit
 
-Encouraged:
+Report:
 
-- Precision
-- Recall
-- F1-score
+- number of rows and columns;
+- feature types (numeric, nominal categorical, and any other relevant types);
+- positive-class proportion;
+- missing values and meaningful special/sentinel values;
+- cleaning decisions and their justifications.
 
-Bonus:
+Inspect the actual chosen dataset. Do not assume missingness, category names, invalid values, or class balance before checking the data.
 
-- ROC
-- AUC
+### 4.2 Train/validation/test split
 
-At least one meaningful visualization is required.
+Create a stratified **70/15/15 train/validation/test split** with `random_state = 42`.
 
-Suitable visualizations include:
+For Home Credit, perform the required stratified 30,000-row sample first, then create this split. The selected sample and split rows must remain identical across all GBDT and MLP experiments.
 
-- confusion-matrix heatmap
-- ROC curve
+Use the validation set for model selection and early-stopping decisions as specified. Keep the test set untouched until both final configurations and all analytical choices are fixed.
 
-Visualizations must be readable and report-ready.
+### 4.3 Leakage-safe preprocessing
 
-The assignment explicitly says graphs must be visible in the PDF report; the grader will not open the notebook just to find them.
+- Fit every learned preprocessing operation on training data only.
+- Apply the already-fitted transformations to validation and test data.
+- Use one-hot encoding for nominal categorical features.
+- Handle categories not observed during training safely, e.g. with an encoder configured to ignore unseen categories; separately explain literal `unknown` values present in Bank Marketing.
+- Handle missing values with a justified strategy fitted on training data only.
+- Scale numeric features for the MLP. Scaling is optional for trees.
+- Keep the same underlying input information and the exact same split rows for both models. Model-specific transformations such as numeric scaling are acceptable and should be explained; do not give one model extra target information or different source rows.
+- Keep the target out of the predictors.
 
----
+Prefer `ColumnTransformer` and `Pipeline` where practical. If transformations are performed outside a pipeline for XGBoost early stopping, fit them only on training data and apply the same fitted transformer to the training, validation, and test partitions.
 
-# 5. Dataset Guardrail
-
-We selected the **Titanic Survival Dataset**.
-
-Available Kaggle files:
-
-- `train.csv`
-- `test.csv`
-- `gender_submission.csv`
-
-## Important distinction
-
-Kaggle's `train.csv` / `test.csv` are NOT the assignment's train/test split.
-
-For this assignment:
-
-- use `train.csv` as the main labeled dataset
-- `train.csv` contains `Survived`
-- create our OWN train/test split from `train.csv`
-- evaluate on the held-out portion because its true `Survived` values are known
-- use the SAME split for all models
-- do NOT use Kaggle `test.csv` for model evaluation
-- `gender_submission.csv` is not required
-
-The Kaggle `test.csv` is a separate competition holdout without the target label and is therefore not appropriate for the required accuracy/confusion-matrix evaluation.
+Be able to explain the distinction between `fit` / `fit_transform` on training data and `transform` on validation/test data.
 
 ---
 
-# 6. Current Dataset Findings
+## 5. Step 2 — Gradient Boosted Decision Trees (GBDT)
 
-The actual Titanic `train.csv` audit found:
+The required estimator is `xgboost.XGBClassifier` with `tree_method="hist"`.
 
-- 891 rows
-- 12 columns
-- `Survived`: 891 non-null
-- `Age`: 714 non-null → 177 missing → 19.87%
-- `Cabin`: 204 non-null → 687 missing → 77.10%
-- `Embarked`: 889 non-null → 2 missing → 0.22%
+### Required controlled experiments
 
-Target:
+- Use binary log loss (`logloss`) to monitor training and validation performance.
+- Compare at least three `learning_rate` values (examples in the handout: `0.01`, `0.1`, `0.3`) while holding other settings fixed.
+- Then vary `max_depth` and **one** regularization control: `subsample`, `reg_alpha`, or `reg_lambda`.
+- Aim for roughly 6–10 total configurations for this model. A full Cartesian grid is not required. Keep search effort comparable to the MLP experiments.
+- Record every configuration tried and its validation score. Do not omit failed, interrupted, or warning-producing runs if they are part of the actual experiment history; describe them accurately.
 
-- `Survived = 0`: 549 → 61.62%
-- `Survived = 1`: 342 → 38.38%
+### Early stopping requirements
 
-Numeric validity audit found:
+- Set a reasonable upper limit on `n_estimators`.
+- Use validation-based early stopping.
+- Put `early_stopping_rounds` and `eval_metric` in the `XGBClassifier` constructor, as specified by the handout.
+- Pass transformed training and validation data to `fit()` through `eval_set`.
+- Put the validation set **last** in `eval_set` so it controls early stopping.
+- Never use the test set as an early-stopping set or in hyperparameter selection.
+- Record the best iteration / stopping behavior and distinguish the early-stopping monitor (`logloss`) from the primary cross-configuration selection metric (`validation AP`).
 
-- Age below zero: 0
-- Fare below zero: 0
-- SibSp below zero: 0
-- Parch below zero: 0
-- invalid Pclass: 0
-- invalid Survived: 0
+### Required GBDT outputs
 
-Do not fabricate noisy/invalid values. If the audit finds no invalid numeric values, state that honestly.
+- training-versus-validation log-loss plot for the selected model;
+- feature-importance plot for the selected model;
+- table of tried settings and validation scores;
+- explicit statement of the feature-importance measure used (for example, gain);
+- explanation of how learning rate, depth/tree complexity, and the selected regularization control affected convergence or overfitting.
 
----
-
-# 7. Data Leakage Guardrail
-
-Prevent data leakage.
-
-Never use target information (`Survived`) to create features.
-
-For preprocessing that learns parameters from data:
-
-- split first where appropriate
-- fit preprocessing on training data
-- transform training data
-- transform test data using the already-fitted preprocessing
-
-Do not calculate train/test-dependent imputation/scaling statistics from the combined dataset.
-
-Be able to explain:
-
-`fit_transform(X_train)` vs. `transform(X_test)`.
+Feature importance is an association-based model explanation, not a causal claim. Report transformed feature names clearly if one-hot encoding is used.
 
 ---
 
-# 8. Feature Engineering Guardrails
+## 6. Step 3 — Multi-Layer Perceptron (MLP)
 
-Potential Titanic features may include:
+Use `sklearn.neural_network.MLPClassifier` with `solver="adam"`.
 
-- `FamilySize`
-- `IsAlone`
-- `CabinKnown`
-- `Title` extracted from `Name`
-- justified fare-related features
+### Required controlled experiments
 
-Do NOT add features merely because they are common Titanic tricks.
+- Compare at least three `hidden_layer_sizes` settings (examples in the handout: `(64,)`, `(128, 64)`, `(128, 64, 32)`) while holding other settings fixed.
+- Then vary `learning_rate_init` and **one** of `activation` or `alpha` (L2 regularization).
+- Aim for roughly 6–10 total configurations. Record every configuration tried and keep the search effort comparable to GBDT.
+- Use `max_iter` as a fixed/documented training budget across comparable configurations where possible.
+- Capture and report convergence warnings. Do not hide or silently suppress them.
+- For the simple comparison recommended in the handout, use `early_stopping=False`.
 
-A feature should be included only if:
+If built-in MLP early stopping is enabled instead:
 
-1. it has a meaningful interpretation;
-2. it is available without target leakage;
-3. it is technically appropriate;
-4. it can be explained in the report;
-5. it contributes meaningfully or is justified by the assignment.
+- explain that scikit-learn reserves an internal validation subset from the training data;
+- document the choice and its implications for the effective training subset;
+- continue using the shared external validation set for final model selection;
+- do not replace or tune against the external test set.
 
-Raw identifier-like columns such as `PassengerId` should not automatically be used as predictive features.
+### Required MLP outputs
 
-Be deliberate about `Name`, `Ticket`, and `Cabin`.
+- selected model's training-loss curve from `loss_curve_`;
+- plot or table of validation performance versus architecture;
+- record of configurations and validation scores;
+- explanation of how width/depth, learning rate, and the varied regularization/activation choice affected results;
+- discussion of convergence warnings and the chosen `max_iter` budget.
 
----
-
-# 9. Cleaning Decision Guardrails
-
-Based on the actual audit:
-
-### Age
-
-19.87% missing.
-
-Likely approach:
-
-- retain rows
-- median imputation
-- fit median on training data only
-
-Explain why median is preferable to blindly dropping approximately 20% of observations.
-
-### Embarked
-
-Only 2 missing values.
-
-Likely approach:
-
-- most-frequent-category imputation
-- fit on training data only
-
-### Cabin
-
-77.10% missing.
-
-Do NOT invent cabin identifiers.
-
-Prefer representing cabin availability as a feature such as:
-
-`CabinKnown = 1 if cabin observed else 0`
-
-Optionally consider deck information if justified.
-
-### Numeric validity
-
-No invalid numeric values were found in the initial audit.
-
-Do not create artificial cleaning operations just to satisfy the rubric.
-
-### Categorical normalization
-
-Normalize whitespace/case where appropriate before encoding.
+Numeric scaling must be fitted on training data only. Do not use unscaled numerical features for MLP merely to make its code match the tree pipeline.
 
 ---
 
-# 10. Reproducibility
+## 7. Experiment budget and fair comparison
 
-Use a fixed random seed, e.g.:
+The handout recommends approximately **6–10 configurations per model**. Experiments may share a configuration where sensible; a full Cartesian product is unnecessary.
 
-`RANDOM_STATE = 42`
+- Keep the search effort broadly comparable across GBDT and MLP.
+- Use controlled comparisons: change the parameter being studied while keeping other settings fixed for that comparison.
+- Record every tried configuration and its validation AP; include relevant convergence/early-stopping information.
+- Use the same training and validation rows for every configuration and both model families.
+- Use the same target definition and underlying predictor information.
+- Fix and document random seeds.
+- Avoid searching against the test set or selecting settings after looking at test metrics.
 
-Use a documented test size, e.g.:
-
-`TEST_SIZE = 0.20`
-
-Use the same split for all models.
-
-Stratification by `Survived` may be used if appropriate for maintaining class proportions.
-
-Do not independently split for different models.
+Do not claim a controlled experiment if several parameters changed at once. Explain when a configuration is an exploratory follow-up rather than a one-variable comparison.
 
 ---
 
-# 11. Notebook Style
+## 8. Step 4 — Model evaluation and comparison
 
-Use this structure:
+### 8.1 Primary model-selection metric
 
-Markdown:
-"What are we doing and why?"
+The primary metric is **validation Average Precision (AP)** for the positive class.
 
-Code:
-"Implement it."
+- Use positive-class probabilities, e.g. `predict_proba(X_valid)[:, 1]`.
+- Compute AP with `sklearn.metrics.average_precision_score`.
+- Do not compute AP from thresholded labels.
+- Do not substitute trapezoidal area under the precision-recall curve for average precision.
+- Choose one final configuration per model using validation AP.
+- Keep the test set untouched until both configurations and analysis decisions are fixed.
 
-Output:
-"Show actual result."
+For XGBoost, early stopping is monitored by validation logloss as required, while the choice among experiment configurations is based on validation AP. Explain this distinction.
 
-Markdown:
-"Interpret the result."
+### 8.2 Final test evaluation
 
-Do not write huge monolithic cells.
+After choices are fixed, evaluate the selected fitted GBDT and MLP once on the test set.
 
-Prefer logical, testable cells.
+Report for the positive class:
 
-Avoid excessive comments that merely restate obvious code.
+- Accuracy;
+- Precision;
+- Recall;
+- F1;
+- Average Precision (AP).
 
-Bad:
+Use a classification threshold of **0.5** for Accuracy, Precision, Recall, and F1. AP uses probabilities and is threshold-independent. If any additional threshold is tuned, select it using validation data only and clearly label it as an additional analysis; preserve the required 0.5-threshold results.
 
-```python
-# Read the CSV file
-df = pd.read_csv("train.csv")
-```
+Include:
 
-when the surrounding Markdown already explains it.
+- both models' precision-recall curves;
+- the test set's positive-class proportion as the PR-curve reference level;
+- confusion matrices for both models;
+- a side-by-side final comparison table.
 
-Better:
+### 8.3 Runtime and environment comparison
 
-```python
-df = pd.read_csv(TRAIN_PATH)
-```
+- Measure final-model fit time on the same machine/runtime and report preprocessing time separately.
+- Use the same hardware/runtime for both fit-time measurements.
+- Do not compare a CPU run with a GPU run as if hardware were identical.
+- Record hardware/runtime details, package versions, and random seeds.
+- Keep preprocessing time distinct from model fitting time; state clearly what each timing includes.
 
-with a nearby Markdown explanation of why the dataset is being loaded.
+### 8.4 Interpretation
 
-Comments should explain intent, non-obvious decisions, assumptions, or risks.
+Discuss:
 
----
+- when GBDT may be preferred over MLP and vice versa for tabular data;
+- sensitivity to learning rate, tree complexity, architecture, scaling, and regularization;
+- predictive performance versus training behavior and fit time;
+- how missing values and categorical features were handled;
+- bias/variance and generalization limitations;
+- the limits of feature importance (association, not causation).
 
-# 12. Scaffold Rules
-
-A scaffolded `assign1-titanic.ipynb` was provided.
-
-Use it as the starting structure.
-
-Do NOT blindly accept scaffold/example decisions.
-
-Some scaffold cells may be explicitly marked as examples/stubs.
-
-For every example:
-
-- inspect the actual data
-- decide whether the approach is appropriate
-- replace it if necessary
-- document the final decision
-
-Preserve useful scaffold structure unless there is a strong reason to change it.
+The handout explicitly permits either model to perform better. Do not force a winner or imply that a higher score alone proves a better general model.
 
 ---
 
-# 13. Report Guardrails
+## 9. Step 5 — PDF report guardrails
 
-The final PDF report must be 10–12 pages.
+The report must be **5–7 pages including figures and references** and submitted on Gradescope.
 
-Page 1 must include:
+Include a page map showing where Steps 1–5 are covered. A clear structure is:
 
-- Colab link
-- page map showing where Steps 1–5 and AI Disclosure are covered
+1. Introduction — task, target/positive class, dataset, data source.
+2. Methods — sample/split, cleaning, preprocessing, model setup, controlled tuning experiments.
+3. Results — experiment tables, selected model metrics, PR curves, confusion matrices, loss curves, feature importance, and training/preprocessing time.
+4. Discussion — GBDT versus MLP, learning behavior, bias/variance, interpretability, limitations.
+5. AI Tool Disclosure — tools, their roles, and what the student personally checked, changed, ran, and interpreted.
 
-Required report content:
+Report requirements:
 
-1. Introduction
-   - problem definition
-   - dataset description
+- Embed every required graph and table directly in the PDF. The grader will not open the notebook to locate missing figures.
+- Use readable axes, labels, legends, captions, and tables. Do not shrink figures excessively to fit more experiments.
+- Keep code out of the report, including appendices.
+- Include references for the dataset and relevant external documentation.
+- Put the Colab notebook link at the **very end** of the PDF.
+- Verify the Colab Viewer permission using a Columbia LionMail account before submission.
 
-2. Data Cleaning
-   - steps
-   - reasoning
-   - before/after examples
-
-3. Feature Engineering
-   - transformations
-   - encodings
-   - constructed features
-
-4. Model Comparison
-   - training setup
-   - evaluation results
-
-5. Discussion
-   - interpretation
-   - strengths
-   - limitations
-
-6. AI Tool Usage Disclosure
-   - tools used
-   - what they contributed
-   - what the student contributed
-
-No code blocks in the PDF body or appendix.
-
-All code belongs in the `.ipynb`.
-
-All important graphs, confusion matrices, and figures must be directly embedded in the PDF.
-
-Therefore, notebook visualizations should be generated cleanly enough to reuse in the report.
+Figures/tables should be generated from actual notebook outputs. Do not manually type results that differ from the notebook.
 
 ---
 
-# 14. Grading Rubric Guardrail
+## 10. AI usage disclosure
 
-Optimize for the actual rubric:
+AI tools are explicitly permitted, but the final report must transparently disclose:
 
-- Data Cleaning & Transformation — 20%
-- Feature Engineering — 20%
-- Model Implementation — 20%
-- Evaluation & Visualization — 15%
-- Discussion & Interpretation — 15%
-- AI Tool Usage Disclosure — 10%
+- the tools used;
+- what each tool contributed;
+- what the student checked, changed, executed, validated, and interpreted personally.
 
-Do not spend disproportionate effort optimizing model accuracy while neglecting cleaning, feature engineering, interpretation, and disclosure.
+Do not claim AI-generated code was independently authored. Do not understate AI assistance or invent contributions. Make sure the disclosure matches the actual workflow (for example, ChatGPT, Cursor, and any other tool actually used).
 
----
-
-# 15. AI Usage Guardrail
-
-AI usage is allowed by the assignment.
-
-Do not conceal it.
-
-The final report must transparently disclose AI usage.
-
-Likely tools used:
-
-- ChatGPT
-- Cursor
-
-The disclosure should accurately describe contributions such as:
-
-- starter-code generation
-- code refinement
-- debugging
-- conceptual explanations
-- notebook organization
-
-Do not claim that AI-generated code was independently written by the student.
-
-The student's own contribution includes:
-
-- understanding the workflow
-- reviewing code
-- making/approving decisions
-- running and inspecting results
-- interpreting results
-- writing/validating the analysis
-- preparing the final submission
+The student should be able to explain the implementation, including preprocessing, leakage prevention, XGBoost early stopping, learning-rate effects, MLP scaling/architecture, convergence warnings, AP, and the final comparison.
 
 ---
 
-# 16. Step-by-Step Execution Protocol
+## 11. Notebook organization and technical style
 
-When the user asks to proceed to a new step, follow this sequence.
+Use clear sections aligned to the assignment:
 
-## Phase 1 — Inspect
+1. Title, objective, dataset/source, and reproducibility notes.
+2. Environment/setup and imports.
+3. Data loading instructions and initial audit.
+4. Target definition and leakage/identifier exclusions.
+5. Sample selection if Home Credit is selected.
+6. Stratified 70/15/15 split.
+7. Preprocessing fitted on training data only.
+8. GBDT controlled experiments and selected-model diagnostics.
+9. MLP controlled experiments and selected-model diagnostics.
+10. Validation-based model selection.
+11. One-time final test evaluation and runtime comparison.
+12. Interpretation, limitations, and report-ready findings.
 
-Inspect:
+Follow this cell pattern where useful:
 
-- current `.ipynb`
-- `Assignment1.pdf`
-- existing outputs
-- current data/results
-- previous step's decisions
+- Markdown: what is being done and why.
+- Code: implement one logical unit.
+- Output: show actual results.
+- Markdown: interpret what the results support and what they do not support.
 
-Do not assume a previous result if it is not present.
+Avoid giant monolithic cells. Comments should explain intent, non-obvious assumptions, and risks rather than restating obvious syntax.
 
-## Phase 2 — Explain
+Include clear instructions for locating/uploading the data in Colab. Do not assume a local filesystem path is available in Colab. Keep raw data out of the notebook itself.
 
-Explain the step thoroughly in chat before making substantial changes.
-
-Cover beginner concepts and rationale.
-
-## Phase 3 — Submission notebook
-
-Create/update:
-
-`assign1-titanic_step<N>_submission.ipynb`
-
-Keep it production-style and assignment-compliant.
-
-## Phase 4 — Learning notebook
-
-Create/update:
-
-`assign1-titanic_step<N>_learning.ipynb`
-
-Add:
-
-- TODOs
-- learning notes
-- conceptual explanations
-- report prompts
-- questions to self-test
-
-## Phase 5 — Run/verify
-
-Never fabricate outputs.
-
-If a result depends on runtime execution, say so and have the user run it in Colab.
-
-After execution, inspect actual outputs before making data-dependent decisions.
-
-## Phase 6 — Checkpoint
-
-Before proceeding, confirm:
-
-- notebook runs
-- no errors
-- requirements for that step are satisfied
-- important outputs are captured
-- report-relevant observations are recorded
+At the start or end, include a reproducibility/environment summary with at least Python, pandas, NumPy, scikit-learn, XGBoost, and relevant plotting-library versions, random seeds, and runtime/hardware information.
 
 ---
 
-# 17. Current Step Status
-
-Completed:
-
-- dataset selection: Titanic
-- Kaggle files obtained
-- Colab configured
-- scaffolded notebook established
-- Step 0 setup completed
-- Step 1 data audit completed
-
-Actual audit results:
-
-- 891 rows × 12 columns
-- Cabin: 77.10% missing
-- Age: 19.87% missing
-- Embarked: 0.22% missing
-- target: 61.62% class 0 / 38.38% class 1
-- no invalid numeric/domain values found in the audited fields
-
-Next logical work:
-
-**Implement the justified data-cleaning/preprocessing strategy without leakage.**
-
----
-
-# 18. What Cursor Must NOT Do
+## 12. What Cursor must not do
 
 Do not:
 
-- rewrite the whole notebook unnecessarily
-- delete previous analysis
-- invent results
-- invent missing/noisy data
-- silently switch datasets
-- use Kaggle `test.csv` as the assignment test set
-- replace Linear Regression with Logistic Regression
-- omit the required alpha comparison
-- create separate train/test splits for different models
-- calculate preprocessing statistics using the held-out test data
-- add arbitrary ML techniques
-- optimize for Kaggle leaderboard performance
-- put code into the PDF
-- omit required AI disclosure
-- remove important assignment-required reasoning
-- claim something is required if it is only a recommendation
-- silently contradict `Assignment1.pdf`
+- silently choose or switch the dataset;
+- use both datasets in one experiment;
+- use the Bank Marketing `duration` predictor or a derivative of it;
+- ignore the meaning of `pdays = 999`;
+- forget the required Home Credit 30,000-row stratified sample or perform it after the train/validation/test split;
+- use Home Credit tables beyond `application_train.csv`;
+- keep `SK_ID_CURR` as a predictor;
+- alter the selected sample or split rows between experiments;
+- fit imputation, encoding, scaling, or other learned preprocessing on validation/test data;
+- scale only one model's features in a way that changes the underlying input information;
+- omit either model family or replace either required estimator with another model;
+- omit any required controlled hyperparameter comparison;
+- exceed the intended experiment budget without a reason;
+- put XGBoost `early_stopping_rounds` or `eval_metric` only in `fit()` instead of the classifier constructor;
+- place validation before training in the XGBoost `eval_set` ordering (validation must be last);
+- use the test set for early stopping, tuning, or model selection;
+- choose final models using test AP;
+- compute AP from thresholded labels or trapezoidal PR area;
+- omit the test-prevalence reference level from the PR plot;
+- hide MLP convergence warnings;
+- report training time and preprocessing time as if they were the same measurement;
+- compare timings from different hardware as if comparable;
+- fabricate or hand-edit results that do not match notebook outputs;
+- claim feature importance proves causality;
+- assume one model must win or a minimum score is required;
+- omit required graphs/tables from the PDF;
+- put code in the PDF;
+- omit AI disclosure;
+- omit the Colab link at the end of the PDF or fail to verify LionMail Viewer access;
+- silently contradict `Assignment2.pdf`.
 
 ---
 
-# 19. Definition of Done
+## 13. Definition of done
 
-The final `.ipynb` is considered ready only when:
+The Assignment 2 work is ready only when:
 
-- it runs top-to-bottom in Colab;
-- all required assignment steps are present;
-- data-cleaning decisions are justified;
-- feature engineering is justified;
-- categorical variables are appropriately encoded;
-- transformations are appropriate;
-- Naive Bayes is implemented correctly;
-- at least two alpha values are compared;
-- Linear Regression is implemented with the required 0.5 threshold;
-- Ridge/LASSO are included if used and interpreted;
-- all models use the same split;
-- accuracy and confusion matrices are present;
-- meaningful visualizations are present;
-- optional/bonus metrics are correctly implemented if included;
-- smoothing results are discussed;
-- model comparison is fair;
-- limitations are discussed;
-- AI usage disclosure is present;
-- there are no fabricated outputs;
-- the notebook is reproducible;
-- the notebook contains the code and technical reasoning needed to support the PDF report.
+### Data preparation
 
-The PDF is then created from the stable notebook outputs and must separately comply with the report formatting rules in `Assignment1.pdf`.
+- one permitted dataset is selected and its source documented;
+- the actual dataset audit reports size, feature types, positive-class proportion, missing values, and special values;
+- dataset-specific rules are followed (Bank `duration` exclusion and `pdays=999` explanation, or Home Credit 30,000-row stratified sample and identifier/target exclusions);
+- a stratified 70/15/15 split with `random_state=42` is created and reused;
+- all learned preprocessing is fitted on training data only;
+- nominal categoricals are one-hot encoded;
+- MLP numeric features are scaled;
+- both models use the same rows and underlying input information.
+
+### GBDT
+
+- `XGBClassifier(tree_method="hist")` is trained;
+- logloss is monitored on training and validation data;
+- at least three learning rates are compared with other settings held fixed;
+- max depth and one regularization control are varied;
+- roughly 6–10 configurations are recorded;
+- early stopping is configured in the estimator constructor and validation is last in `eval_set`;
+- training/validation log-loss and feature-importance plots are present;
+- the importance measure is named and results are interpreted.
+
+### MLP
+
+- `MLPClassifier(solver="adam")` is trained on scaled numeric inputs;
+- at least three architectures are compared with other settings held fixed;
+- learning rate and one of activation/alpha are varied;
+- roughly 6–10 configurations are recorded;
+- max iteration budget and convergence warnings are reported;
+- early-stopping choice is documented;
+- selected-model `loss_curve_` and validation-performance-by-architecture output are present.
+
+### Evaluation and report
+
+- final configurations are selected by validation AP;
+- test set remains untouched until choices are fixed and is evaluated only for final reporting;
+- AP uses positive-class probabilities with `average_precision_score`;
+- classification metrics use threshold 0.5;
+- both PR curves, test positive-class reference level, confusion matrices, and a comparison table are present;
+- final fit time and preprocessing time are separately measured on the same runtime;
+- hardware, package versions, and random seeds are recorded;
+- the PDF is 5–7 pages, contains a page map for Steps 1–5, embeds required figures/tables, includes references and AI disclosure, and contains no code;
+- Colab link is at the very end and LionMail Viewer access is verified;
+- the notebook runs top-to-bottom and all reported results match its real outputs.
 
 ---
 
-# 20. Final Principle
+## 14. Final principle
 
-The goal is NOT merely to make the code execute.
-
-The goal is:
-
-**Produce a technically correct, reproducible, professionally structured, assignment-compliant `.ipynb` that the student understands and can defend, and then use that notebook to produce the required analytical report.**
+The objective is not simply to execute two classifiers. It is to produce a technically correct, reproducible, controlled comparison of gradient-boosted trees and an MLP on one permitted tabular dataset, understand how their learning behavior and preprocessing differ, evaluate them without test leakage, and communicate the evidence accurately.
 
 When in doubt:
 
-**Assignment1.pdf > correctness > notebook quality > student understanding > report readiness > repository polish.**
+**`Assignment2.pdf` → correctness and leakage control → fair experiments → notebook reproducibility → student understanding → report quality → repository polish.**
