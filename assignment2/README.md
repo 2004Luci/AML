@@ -10,8 +10,8 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Workflow guardrails added (`AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc`)
 - [x] Dataset selected: **Bank Marketing** (`data/bank-additional-full.csv`)
 - [x] Dual notebook tracks scaffolded (`notebook/final/` + `notebook/learning/`)
-- [x] Step 1 scaffolds created (`assign2-bank_step1.ipynb` in both tracks)
-- [ ] Step 1 data preparation and 70/15/15 split implemented
+- [x] Step 0 scaffold kept (`assign2-bank_step0.ipynb` in both tracks)
+- [x] Step 1 data preparation, 70/15/15 split, and preprocessing implemented (`assign2-bank_step1.ipynb`); Colab run pending
 - [ ] Step 2 GBDT experiments completed
 - [ ] Step 3 MLP experiments completed
 - [ ] Step 4 validation-based selection and one-time test evaluation completed
@@ -46,8 +46,10 @@ assignment2/
 │   └── bank-additional-full.csv     # Chosen dataset (not embedded in notebook)
 ├── notebook/
 │   ├── final/                       # Submission-quality step notebooks
+│   │   ├── assign2-bank_step0.ipynb
 │   │   └── assign2-bank_step1.ipynb
 │   └── learning/                    # Learning / report-prep step notebooks
+│       ├── assign2-bank_step0.ipynb
 │       └── assign2-bank_step1.ipynb
 └── report/
     └── Assignment2_Report.pdf      # Final 5–7 page report
