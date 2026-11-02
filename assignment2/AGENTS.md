@@ -149,6 +149,24 @@ Do not add complex techniques, extensive searches, or extra models that are not 
 - The handout treats this as a historical benchmark, not evidence of current banking performance.
 - Notebooks are written for **Google Colab submission**: expect `bank-additional-full.csv` in the notebook working directory via Colab Files → Upload. Do not hard-code this git repo’s paths (`assignment2/data/`, `../data`, GitHub raw URLs, etc.) inside `.ipynb` code. The student copies the `.ipynb` into Colab; the notebook must run there standalone.
 
+### Step 1 decisions (fixed; verified by running the notebook)
+
+Audit facts: 41,188 × 21; 10 numeric + 10 nominal + target; positive rate 11.27%; no NaNs; literal `"unknown"` in `default` (8,597), `education` (1,731), `housing`/`loan` (990), `job` (330), `marital` (80); `pdays = 999` in 39,673 rows (96.32%), real range 0–27; 12 exact duplicates.
+
+| Item | Decision |
+|---|---|
+| Target | `y == "yes"` → 1 |
+| `duration` | Dropped |
+| `pdays = 999` | `previously_contacted` 0/1 flag; `pdays` → −1 when no contact |
+| `"unknown"` | Kept as its own category, one-hot encoded |
+| NaN | None; no imputer |
+| Duplicates | Kept (no ID; 12 rows) |
+| Split | Two-stage stratified 70/15/15, `random_state=42` → 28,831 / 6,178 / 6,179 rows |
+| Preprocessing | `ColumnTransformer` fit on train only: one-hot (`handle_unknown="ignore"`) for 10 categoricals; numeric passthrough for GBDT, `StandardScaler` for MLP; 63 encoded features for both |
+| Timing | `PREPROCESSING_TIME_SEC` recorded per model input, separately from fit time |
+
+Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train_mlp/X_valid_mlp/X_test_mlp`, `y_train/y_valid/y_test`, `PREPROCESSING_TIME_SEC`, `RANDOM_STATE`.
+
 ### Home Credit Default Risk (not used)
 
 Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
@@ -521,6 +539,7 @@ Suggested step notebooks (Assignment 1 style):
 
 | Step | Focus | Notebooks |
 |---|---|---|
+| 0 | Scaffold: setup + Colab data upload + initial load (kept for history) | `assign2-bank_step0.ipynb` |
 | 1 | Audit, clean, 70/15/15 split, leakage-safe preprocessing | `assign2-bank_step1.ipynb` in `final/` and `learning/` |
 | 2 | GBDT controlled experiments + selected-model diagnostics | `assign2-bank_step2.ipynb` |
 | 3 | MLP controlled experiments + selected-model diagnostics | `assign2-bank_step3.ipynb` |
