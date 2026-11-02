@@ -13,13 +13,23 @@ The authoritative specification is `Assignment2.pdf`. It is the source of truth 
 
 The Google Colab notebook link must appear **at the very end of the PDF report**. Set notebook sharing so anyone signed in with a Columbia LionMail account can open it as a Viewer without requesting access. Verify this before submission; the handout states that inaccessible notebooks incur a 10-point deduction.
 
-### Primary notebook path
+### Required notebook locations
 
-Maintain one consolidated submission notebook:
+Maintain the two notebook tracks in these exact directories (same dual-track workflow as Assignment 1; folder names updated for clarity):
 
-`/notebook/assign2-ms7556.ipynb`
+- **Final / submission notebooks:** `/notebook/final/`
+- **Learning notebooks:** `/notebook/learning/`
 
-This is the primary technical deliverable. Do not create separate learning/stub notebooks unless the student explicitly asks for them. Assignment 1 temporarily used step stubs and then consolidated; for Assignment 2, prefer one notebook from the start unless the student asks otherwise. Repository and README polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
+For step `N`, use:
+
+- `/notebook/final/assign2-bank_step<N>.ipynb`
+- `/notebook/learning/assign2-bank_step<N>.ipynb`
+
+After all steps are complete, consolidate the submission track into the Colab deliverable:
+
+- `/notebook/final/assign2-ms7556.ipynb`
+
+Do not place step-specific notebooks elsewhere unless explicitly requested. The `.ipynb` is the primary technical deliverable; repository polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
 
 ### Rubric weights (from `Assignment2.pdf`)
 
@@ -38,7 +48,7 @@ Comparison and evaluation together are 45% of the grade. Do not underinvest in f
 
 ## 1. Non-negotiable working protocol
 
-For every meaningful assignment step, follow this sequence.
+For every meaningful assignment step, follow this three-part sequence (matching Assignment 1).
 
 ### A. Explain before implementing
 
@@ -55,11 +65,15 @@ Explain the work in chat before making substantial notebook changes. Assume the 
 
 Do not merely paste code without teaching the decision behind it.
 
-### B. Update the submission notebook
+### B. Update the final / submission notebook
 
-Update `/notebook/assign2-ms7556.ipynb` incrementally. Preserve working sections and previous verified decisions. Avoid broad rewrites when a small, targeted edit is sufficient.
+Create/update the submission-quality notebook for the current step:
 
-The notebook must:
+`/notebook/final/assign2-bank_step<N>.ipynb`
+
+This is the primary deliverable track. Preserve working sections and previous verified decisions. Avoid broad rewrites when a small, targeted edit is sufficient.
+
+The final notebook must:
 
 - run top-to-bottom in the intended Jupyter/Colab environment;
 - include setup and clear data-loading instructions;
@@ -72,9 +86,26 @@ The notebook must:
 - avoid submission-noise aimed at graders or process notes such as “checkpoint”, “current scope”, “notebook goal”, or step-handoff text;
 - never contain fabricated results or claims of execution that did not occur.
 
-Student-facing teaching can stay in chat. The notebook itself should read as a finished submission, not a tutorial checklist. Production-style does not mean explanation-free: retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
+Production-style does not mean explanation-free: retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
 
-### C. Run, inspect, and checkpoint
+### C. Update the learning notebook
+
+Create/update the parallel learning notebook for the same step:
+
+`/notebook/learning/assign2-bank_step<N>.ipynb`
+
+This is **not** the Colab submission artifact. It should use the same correct implementation as the final notebook, plus:
+
+- detailed explanations and conceptual reminders;
+- TODOs and “why are we doing this?” notes;
+- questions the student should be able to answer;
+- report-writing prompts;
+- places to record observations after Colab runs;
+- reminders about assignment/rubric compliance.
+
+The learning notebook may be verbose and pedagogical. Keep it in sync with the final notebook for each step.
+
+### D. Run, inspect, and checkpoint
 
 Never invent runtime-dependent results. Ask the student to run the notebook in Colab when execution is required, then inspect the actual outputs they provide before interpreting results or making subsequent data-dependent decisions.
 
@@ -116,7 +147,7 @@ Do not add complex techniques, extensive searches, or extra models that are not 
 - Explain how `pdays = 999` is handled. It means there was no previous contact; do not silently interpret it as 999 elapsed days, discard it, or replace it without preserving/explaining its meaning. A documented indicator plus a justified numeric representation is one possible strategy; other approaches are acceptable if reasoned and applied consistently.
 - A random split does not establish generalization to future campaigns. State this limitation in the report.
 - The handout treats this as a historical benchmark, not evidence of current banking performance.
-- In Colab, expect the student to upload/place `bank-additional-full.csv` in the notebook working directory (or an explicitly documented Drive path). Do not hard-require the local repo `data/` path inside the notebook.
+- Notebooks are written for **Google Colab submission**: expect `bank-additional-full.csv` in the notebook working directory via Colab Files → Upload. Do not hard-code this git repo’s paths (`assignment2/data/`, `../data`, GitHub raw URLs, etc.) inside `.ipynb` code. The student copies the `.ipynb` into Colab; the notebook must run there standalone.
 
 ### Home Credit Default Risk (not used)
 
@@ -353,20 +384,21 @@ The student should be able to explain the implementation, including preprocessin
 
 ## 11. Notebook organization and technical style
 
-Use clear sections aligned to the assignment:
+Build step notebooks incrementally under `final/` and `learning/`. Each step notebook should include the prior verified pipeline plus the new step’s work, so it remains runnable top-to-bottom.
+
+Typical section order across the full assignment:
 
 1. Title, objective, dataset/source, and reproducibility notes.
 2. Environment/setup and imports.
 3. Data loading instructions and initial audit.
-4. Target definition and leakage/identifier exclusions.
-5. Sample selection if Home Credit is selected.
-6. Stratified 70/15/15 split.
-7. Preprocessing fitted on training data only.
-8. GBDT controlled experiments and selected-model diagnostics.
-9. MLP controlled experiments and selected-model diagnostics.
-10. Validation-based model selection.
-11. One-time final test evaluation and runtime comparison.
-12. Interpretation, limitations, and report-ready findings.
+4. Target definition and leakage exclusions (`duration`, `pdays=999`, `unknown`).
+5. Stratified 70/15/15 split.
+6. Preprocessing fitted on training data only.
+7. GBDT controlled experiments and selected-model diagnostics.
+8. MLP controlled experiments and selected-model diagnostics.
+9. Validation-based model selection.
+10. One-time final test evaluation and runtime comparison.
+11. Interpretation, limitations, and report-ready findings.
 
 Follow this cell pattern where useful:
 
@@ -374,6 +406,8 @@ Follow this cell pattern where useful:
 - Code: implement one logical unit.
 - Output: show actual results.
 - Markdown: interpret what the results support and what they do not support.
+
+In the **learning** notebook, additionally use blockquotes for learning notes, TODOs, self-check questions, and report prompts.
 
 Avoid giant monolithic cells. Comments should explain intent, non-obvious assumptions, and risks rather than restating obvious syntax.
 
@@ -473,25 +507,28 @@ The Assignment 2 work is ready only when:
 
 ## 14. Change protocol
 
-When asked to continue or edit:
+When asked to continue or edit a step:
 
-1. **Inspect** the current notebook (if present), `Assignment2.pdf`, `AGENTS.md`, and any real execution outputs the student provides.
+1. **Inspect** the current final + learning notebooks, `Assignment2.pdf`, `AGENTS.md`, and any real execution outputs the student provides.
 2. **Explain** the planned change in chat before substantial notebook edits.
-3. **Edit** `/notebook/assign2-ms7556.ipynb` with the smallest sufficient change. Preserve working, verified sections.
-4. **Verify** with real runs (student Colab or local). Never invent outputs.
-5. **Confirm** the change still meets the relevant assignment requirements before moving on.
-6. **Record** durable decisions that should persist across sessions (dataset choice, cleaning rules, selected hyperparameters, seeds) back into `AGENTS.md` or the notebook Markdown when they become fixed.
+3. **Edit** `/notebook/final/assign2-bank_step<N>.ipynb` with the smallest sufficient change. Preserve working, verified sections.
+4. **Mirror** the same implementation into `/notebook/learning/assign2-bank_step<N>.ipynb`, adding or updating learning notes, TODOs, self-check questions, and report prompts.
+5. **Verify** with real runs (student Colab or local). Never invent outputs.
+6. **Confirm** the change still meets the relevant assignment requirements before moving on.
+7. **Record** durable decisions that should persist across sessions (dataset choice, cleaning rules, selected hyperparameters, seeds) back into `AGENTS.md` or the notebook Markdown when they become fixed.
 
-Suggested implementation order, matching Assignment 1’s stepwise flow:
+Suggested step notebooks (Assignment 1 style):
 
-1. Dataset choice + download into `data/` + Colab loading instructions *(Bank Marketing done)*
-2. Audit, cleaning decisions, stratified 70/15/15 split, leakage-safe preprocessing
-3. GBDT controlled experiments and selected-model diagnostics
-4. MLP controlled experiments and selected-model diagnostics
-5. Validation-based selection + one-time test evaluation + runtime comparison
-6. Report PDF (5–7 pages) + Colab link / LionMail Viewer verification
+| Step | Focus | Notebooks |
+|---|---|---|
+| 1 | Audit, clean, 70/15/15 split, leakage-safe preprocessing | `assign2-bank_step1.ipynb` in `final/` and `learning/` |
+| 2 | GBDT controlled experiments + selected-model diagnostics | `assign2-bank_step2.ipynb` |
+| 3 | MLP controlled experiments + selected-model diagnostics | `assign2-bank_step3.ipynb` |
+| 4 | Validation AP selection, one-time test eval, timing/PR/confusion | `assign2-bank_step4.ipynb` |
+| Final | Consolidated Colab submission notebook | `final/assign2-ms7556.ipynb` |
+| Report | 5–7 page PDF + LionMail Viewer verification | `report/Assignment2_Report.pdf` |
 
-Do not start report writing before the notebook’s final figures and tables exist. Do not inspect the test set for model selection.
+Dataset download into `data/` is done (Bank Marketing). Do not start report writing before the notebook’s final figures and tables exist. Do not inspect the test set for model selection.
 
 ---
 
