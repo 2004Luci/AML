@@ -5,21 +5,23 @@ alwaysApply: true
 
 Follow `AGENTS.md` for the full Assignment 2 guardrails. `Assignment2.pdf` is the authoritative specification.
 
-The primary technical deliverable is one consolidated notebook:
+Maintain two notebook tracks (same dual-track workflow as Assignment 1):
 
-- `/notebook/assign2-ms7556.ipynb`
+- Final / submission: `/notebook/final/assign2-bank_step<N>.ipynb`
+- Learning: `/notebook/learning/assign2-bank_step<N>.ipynb`
+- Consolidated Colab deliverable (when all steps are done): `/notebook/final/assign2-ms7556.ipynb`
 
-For every meaningful change:
+For every meaningful step:
 
 1. Explain in chat what is changing, why, relevant alternatives/risks, how it satisfies the assignment, and what should be discussed in the report.
-2. Update the submission notebook incrementally. Preserve working sections and keep it runnable, reproducible, and submission-ready. Prefer one consolidated notebook; do not create step-stub notebooks unless asked.
-3. Validate with real execution outputs. Never invent results or claim cells were run when they were not.
-4. Keep teaching in chat; keep the notebook free of checkpoint/process meta notes aimed at graders.
+2. Update the final/submission notebook for that step. Keep it runnable, reproducible, and submission-ready (no checkpoint/process meta notes aimed at graders).
+3. Mirror the same correct implementation into the learning notebook, adding learning notes, TODOs, self-check questions, and report prompts.
+4. Validate with real execution outputs. Never invent results or claim cells were run when they were not.
 
 Core assignment constraints:
 
-- Dataset is fixed: Bank Marketing at `data/bank-additional-full.csv` (flat `data/`; no `raw/`). Do not switch to Home Credit or mix datasets.
-- Read with `sep=";"`, drop `duration`, and explain `pdays = 999` and literal `unknown` categories. In Colab, load from the notebook working directory / documented upload path, not a hard-coded local repo path.
+- Dataset is fixed: Bank Marketing. Local repo copy may live under `data/` for convenience, but **notebook code must be Colab-standalone**: load `bank-additional-full.csv` from the working directory after Files → Upload. Do not hard-code this git repo’s paths or GitHub URLs in `.ipynb` cells.
+- Read with `sep=";"`, drop `duration`, and explain `pdays = 999` and literal `unknown` categories. Do not switch to Home Credit or mix datasets.
 - Reuse one stratified 70/15/15 train/validation/test split with `random_state=42` for every experiment. Fit learned preprocessing on training data only. One-hot encode nominal categories; scale numeric features for MLP. Keep the same split rows and underlying input information for both models.
 - GBDT: `xgboost.XGBClassifier(tree_method="hist")`; monitor train/validation `logloss`; compare at least three learning rates, then vary `max_depth` and one regularization control; use roughly 6–10 configurations. Put `early_stopping_rounds` and `eval_metric` in the estimator constructor. Pass transformed train and validation data through `eval_set`, with validation last. Include loss curves, feature importance, and a tried-configurations table.
 - MLP: `MLPClassifier(solver="adam")`; compare at least three architectures, then vary `learning_rate_init` and one of `activation` or `alpha`; use roughly 6–10 configurations. Fix/document `max_iter`, capture convergence warnings, and normally use `early_stopping=False`. Include `loss_curve_` and validation performance by architecture.

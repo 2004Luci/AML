@@ -9,25 +9,28 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Assignment specification added (`Assignment2.pdf`)
 - [x] Workflow guardrails added (`AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc`)
 - [x] Dataset selected: **Bank Marketing** (`data/bank-additional-full.csv`)
-- [ ] Notebook scaffolded (`notebook/assign2-ms7556.ipynb`)
-- [ ] Data preparation and 70/15/15 split implemented
-- [ ] GBDT experiments completed
-- [ ] MLP experiments completed
-- [ ] Final validation-based model selection and one-time test evaluation completed
-- [ ] Notebook verified top-to-bottom in Colab
+- [x] Dual notebook tracks scaffolded (`notebook/final/` + `notebook/learning/`)
+- [x] Step 1 scaffolds created (`assign2-bank_step1.ipynb` in both tracks)
+- [ ] Step 1 data preparation and 70/15/15 split implemented
+- [ ] Step 2 GBDT experiments completed
+- [ ] Step 3 MLP experiments completed
+- [ ] Step 4 validation-based selection and one-time test evaluation completed
+- [ ] Consolidated `final/assign2-ms7556.ipynb` verified top-to-bottom in Colab
 - [ ] 5–7 page report completed and checked
 - [ ] Colab Viewer access verified using Columbia LionMail
 
 **Chosen dataset: Bank Marketing.** Local file: `data/bank-additional-full.csv` (semicolon-separated; 41,188 rows). Drop `duration`; explain `pdays=999` and literal `unknown` categories. Home Credit is not used.
 
-### Planned work order (same style as Assignment 1)
+### Planned work order (same dual-notebook style as Assignment 1)
 
-1. ~~Choose dataset → download to `data/`~~ → document Colab load path in the notebook  
-2. Audit / clean / stratified 70/15/15 split / leakage-safe preprocessing  
-3. GBDT controlled experiments (~6–10 configs)  
-4. MLP controlled experiments (~6–10 configs)  
-5. Validation AP selection → one-time test evaluation → timing/PR/confusion figures  
-6. Write the 5–7 page report from notebook outputs; verify LionMail Viewer access
+For each step: explain in chat → update `notebook/final/` → mirror into `notebook/learning/` with learning notes → run/verify with real outputs.
+
+1. ~~Choose dataset → download to `data/`~~  
+2. Step 1 — audit / clean / stratified 70/15/15 / leakage-safe preprocessing  
+3. Step 2 — GBDT controlled experiments (~6–10 configs)  
+4. Step 3 — MLP controlled experiments (~6–10 configs)  
+5. Step 4 — validation AP selection → one-time test evaluation → timing/PR/confusion figures  
+6. Consolidate to `final/assign2-ms7556.ipynb` → write the 5–7 page report → verify LionMail Viewer access
 
 ## Repository layout
 
@@ -42,7 +45,10 @@ assignment2/
 ├── data/
 │   └── bank-additional-full.csv     # Chosen dataset (not embedded in notebook)
 ├── notebook/
-│   └── assign2-ms7556.ipynb         # Final consolidated, runnable notebook
+│   ├── final/                       # Submission-quality step notebooks
+│   │   └── assign2-bank_step1.ipynb
+│   └── learning/                    # Learning / report-prep step notebooks
+│       └── assign2-bank_step1.ipynb
 └── report/
     └── Assignment2_Report.pdf      # Final 5–7 page report
 ```
@@ -65,9 +71,16 @@ A concise always-on Cursor rule. It points Cursor to `AGENTS.md` and reinforces 
 
 Store the selected dataset's original downloaded file(s) here (currently `bank-additional-full.csv`). Keep data separate from notebook code. Do not download unnecessary tables or files. In Colab, upload the CSV into the notebook working directory (or Drive) rather than depending on this local path.
 
-### `notebook/assign2-ms7556.ipynb`
+### `notebook/final/` and `notebook/learning/`
 
-The primary technical deliverable. It should contain setup and data-loading instructions, the complete reproducible analysis, actual outputs, report-ready figures, and enough professional Markdown to explain the decisions. The notebook should run top-to-bottom in Colab.
+Same dual-track layout as Assignment 1 (`primary`/`stub` there; clearer `final`/`learning` names here):
+
+| Track | Role |
+|---|---|
+| `notebook/final/assign2-bank_step<N>.ipynb` | Submission-quality code + professional Markdown |
+| `notebook/learning/assign2-bank_step<N>.ipynb` | Same implementation + learning notes, TODOs, self-checks, report prompts |
+
+When all steps are done, consolidate the final track into `notebook/final/assign2-ms7556.ipynb` for the Colab link in the PDF. The learning notebooks are for study/report prep and are not the graded Colab artifact.
 
 ### `report/Assignment2_Report.pdf`
 
@@ -168,4 +181,4 @@ The Colab link is not just a convenience: the assignment states that **10 points
 
 ## Workflow reference
 
-Use `AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc` the same way Assignment 1 used its guardrails: explain before editing, update one consolidated notebook, validate with real outputs, and keep teaching detail in chat while the notebook stays submission-ready.
+Use `AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc` the same way Assignment 1 used its guardrails: explain before editing, update the final notebook and the learning notebook for each step, validate with real outputs, and keep the final track submission-ready.
