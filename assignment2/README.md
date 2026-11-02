@@ -8,7 +8,8 @@ The assignment focuses on controlled experiments, predictive performance, learni
 
 - [x] Assignment specification added (`Assignment2.pdf`)
 - [x] Workflow guardrails added (`AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc`)
-- [ ] Dataset selected and downloaded
+- [x] Dataset selected: **Bank Marketing** (`data/bank-additional-full.csv`)
+- [ ] Notebook scaffolded (`notebook/assign2-ms7556.ipynb`)
 - [ ] Data preparation and 70/15/15 split implemented
 - [ ] GBDT experiments completed
 - [ ] MLP experiments completed
@@ -17,7 +18,16 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [ ] 5–7 page report completed and checked
 - [ ] Colab Viewer access verified using Columbia LionMail
 
-**Dataset selection is still pending.** The handout describes Bank Marketing as the simpler option to download and run. Both dataset choices receive the same grading treatment. Choose one before implementing the dataset-specific notebook path; do not combine them.
+**Chosen dataset: Bank Marketing.** Local file: `data/bank-additional-full.csv` (semicolon-separated; 41,188 rows). Drop `duration`; explain `pdays=999` and literal `unknown` categories. Home Credit is not used.
+
+### Planned work order (same style as Assignment 1)
+
+1. ~~Choose dataset → download to `data/`~~ → document Colab load path in the notebook  
+2. Audit / clean / stratified 70/15/15 split / leakage-safe preprocessing  
+3. GBDT controlled experiments (~6–10 configs)  
+4. MLP controlled experiments (~6–10 configs)  
+5. Validation AP selection → one-time test evaluation → timing/PR/confusion figures  
+6. Write the 5–7 page report from notebook outputs; verify LionMail Viewer access
 
 ## Repository layout
 
@@ -30,7 +40,7 @@ assignment2/
 │   └── rules/
 │       └── assignment2-workflow.mdc
 ├── data/
-│   └── raw/                         # Downloaded source data (not embedded in notebook)
+│   └── bank-additional-full.csv     # Chosen dataset (not embedded in notebook)
 ├── notebook/
 │   └── assign2-ms7556.ipynb         # Final consolidated, runnable notebook
 └── report/
@@ -51,9 +61,9 @@ The detailed project guardrails for AI-assisted development. It records the data
 
 A concise always-on Cursor rule. It points Cursor to `AGENTS.md` and reinforces the most important notebook, dataset, experiment, evaluation, and report constraints.
 
-### `data/raw/`
+### `data/`
 
-Store the selected dataset's original downloaded file(s) here. Keep raw data separate from notebook code. Do not download unnecessary tables or files.
+Store the selected dataset's original downloaded file(s) here (currently `bank-additional-full.csv`). Keep data separate from notebook code. Do not download unnecessary tables or files. In Colab, upload the CSV into the notebook working directory (or Drive) rather than depending on this local path.
 
 ### `notebook/assign2-ms7556.ipynb`
 
@@ -67,24 +77,19 @@ The final report submitted on Gradescope. It must be 5–7 pages including figur
 
 Choose exactly one dataset as specified in `Assignment2.pdf`.
 
-### Option A — Bank Marketing (simpler option in the handout)
+### Chosen — Bank Marketing
 
-- Download `bank-additional.zip` from the UCI Bank Marketing source linked in the assignment handout.
-- Extract `bank-additional-full.csv`.
-- Place it at `data/raw/bank-additional-full.csv`.
-- Read it with a semicolon delimiter (`sep=";"`).
+- Source: UCI Bank Marketing (`bank-additional.zip` → `bank-additional-full.csv`).
+- Local path: `data/bank-additional-full.csv`.
+- Read with a semicolon delimiter (`sep=";"`).
 - Predict `y`; treat `yes` as the positive class.
 - **Exclude `duration` from all predictors** because the completed call duration is not available before the call and is a leakage risk.
 - Explain how literal `unknown` category values are handled and how `pdays = 999` is represented, since 999 means there was no previous contact.
 - Note in the report that a random split does not measure generalization to future campaigns.
 
-### Option B — Home Credit Default Risk
+### Not used — Home Credit Default Risk
 
-- Download `application_train.csv` from the Kaggle Home Credit Default Risk competition, after accepting the relevant data terms if required.
-- Place it at `data/raw/application_train.csv`.
-- Use this file only; do not join the other competition tables.
-- Separate `TARGET` from predictors and drop `SK_ID_CURR`.
-- Before splitting, take one **30,000-row sample stratified on `TARGET` with `random_state=42`**. Reuse exactly this sample for every experiment.
+Documented in `Assignment2.pdf` / `AGENTS.md` for completeness only. Do not download or mix with Bank Marketing.
 
 ## Environment setup
 
@@ -144,6 +149,23 @@ Required visuals include the GBDT training-versus-validation log-loss plot, sele
 - [ ] Colab notebook link appears at the very end of the PDF.
 - [ ] Colab sharing allows anyone signed in with a Columbia LionMail account to open as Viewer; access has been verified.
 
+## Grading weights (from the handout)
+
+| Category | Weight |
+|---|---|
+| Data Preparation | 15% |
+| GBDT Implementation | 15% |
+| MLP Implementation | 15% |
+| GBDT vs. MLP Comparison | 25% |
+| Evaluation & Visualization | 20% |
+| AI Tool Usage Disclosure | 10% |
+
+There is no minimum F1/AP score and neither model is required to win. Fair comparison, correct metrics/figures, and honest interpretation matter more than forcing a winner.
+
 ## Important submission reminder
 
 The Colab link is not just a convenience: the assignment states that **10 points will be deducted** if the grader cannot open the notebook using a Columbia LionMail account. Verify the sharing setting and test access before submitting.
+
+## Workflow reference
+
+Use `AGENTS.md` and `.cursor/rules/assignment2-workflow.mdc` the same way Assignment 1 used its guardrails: explain before editing, update one consolidated notebook, validate with real outputs, and keep teaching detail in chat while the notebook stays submission-ready.

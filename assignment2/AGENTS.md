@@ -19,7 +19,20 @@ Maintain one consolidated submission notebook:
 
 `/notebook/assign2-ms7556.ipynb`
 
-This is the primary technical deliverable. Do not create separate learning/stub notebooks unless the student explicitly asks for them. Repository and README polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
+This is the primary technical deliverable. Do not create separate learning/stub notebooks unless the student explicitly asks for them. Assignment 1 temporarily used step stubs and then consolidated; for Assignment 2, prefer one notebook from the start unless the student asks otherwise. Repository and README polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
+
+### Rubric weights (from `Assignment2.pdf`)
+
+| Category | Weight | Focus |
+|---|---|---|
+| Data Preparation | 15% | Correct split and preprocessing; justified choices; no leakage |
+| GBDT Implementation | 15% | Correct training, controlled tuning, early stopping, learning dynamics |
+| MLP Implementation | 15% | Correct scaling, training, controlled tuning, learning dynamics |
+| GBDT vs. MLP Comparison | 25% | Fair comparison of performance, time, and behavior; thoughtful analysis |
+| Evaluation & Visualization | 20% | Correct metrics and clear required figures embedded in the PDF |
+| AI Tool Usage Disclosure | 10% | Transparent account of AI assistance and student verification |
+
+Comparison and evaluation together are 45% of the grade. Do not underinvest in fair comparison, required figures, or interpretation just to add more tuning runs.
 
 ---
 
@@ -56,9 +69,10 @@ The notebook must:
 - include actual, relevant outputs and report-ready figures;
 - avoid tutorial clutter, temporary debugging cells, stale output, and unresolved TODOs in the final version;
 - avoid dead code and unnecessary imports;
+- avoid submission-noise aimed at graders or process notes such as “checkpoint”, “current scope”, “notebook goal”, or step-handoff text;
 - never contain fabricated results or claims of execution that did not occur.
 
-Production-style does not mean explanation-free. Retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
+Student-facing teaching can stay in chat. The notebook itself should read as a finished submission, not a tutorial checklist. Production-style does not mean explanation-free: retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
 
 ### C. Run, inspect, and checkpoint
 
@@ -88,11 +102,12 @@ Do not add complex techniques, extensive searches, or extra models that are not 
 
 ## 3. Dataset choice and dataset-specific guardrails
 
-The student must choose **one** of the two datasets. The choice has not yet been recorded. The handout describes Bank Marketing as the simpler option to download and run; both datasets receive the same grading treatment. Do not silently choose a dataset or mix rows/features from the two datasets. Confirm the choice before implementing dataset-specific loading and cleaning. Until then, preserve both paths in documentation and keep dataset-specific notebook code clearly separated or pending.
+**Chosen dataset: Bank Marketing.** Local file: `data/bank-additional-full.csv`. Do not switch to Home Credit or mix the two datasets.
 
-### Option A — Bank Marketing (simpler handout option)
+### Bank Marketing (active)
 
 - Use `bank-additional-full.csv` (41,188 rows) from `bank-additional.zip`.
+- Repository path: `assignment2/data/bank-additional-full.csv` (flat `data/` folder; no `raw/` subdirectory).
 - Read the CSV with a semicolon separator (`sep=";"`).
 - Predict whether a client subscribes to a term deposit.
 - Treat `y = "yes"` as the positive class and encode the target consistently as 1; `"no"` is 0.
@@ -101,20 +116,17 @@ The student must choose **one** of the two datasets. The choice has not yet been
 - Explain how `pdays = 999` is handled. It means there was no previous contact; do not silently interpret it as 999 elapsed days, discard it, or replace it without preserving/explaining its meaning. A documented indicator plus a justified numeric representation is one possible strategy; other approaches are acceptable if reasoned and applied consistently.
 - A random split does not establish generalization to future campaigns. State this limitation in the report.
 - The handout treats this as a historical benchmark, not evidence of current banking performance.
+- In Colab, expect the student to upload/place `bank-additional-full.csv` in the notebook working directory (or an explicitly documented Drive path). Do not hard-require the local repo `data/` path inside the notebook.
 
-### Option B — Home Credit Default Risk
+### Home Credit Default Risk (not used)
 
-- Use **`application_train.csv` only**.
-- Predict `TARGET`, where the positive class (`TARGET = 1`) identifies applicants with payment difficulties.
-- Drop `SK_ID_CURR` from predictors and separate `TARGET` from the feature matrix.
-- Before making any train/validation/test split, take a **30,000-row stratified sample using `TARGET` and `random_state = 42`**.
-- Use this exact same 30,000-row sample for every experiment and both model families.
-- Do not join additional Home Credit tables. Do not prepare Kaggle competition submissions; neither is required.
-- A Kaggle account and acceptance of the competition data terms may be required. Follow the source's access and data-use terms.
+Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
+
+- Would use `application_train.csv` only; drop `SK_ID_CURR`; separate `TARGET`; take one 30,000-row TARGET-stratified sample with `random_state=42` before splitting.
 
 ### Dataset-neutral rule
 
-Whichever option is selected, use only the permitted source file(s), document the source and the actual shape, and never change the dataset or sample silently after experiments begin.
+Use only the permitted Bank Marketing source file, document the source and the actual shape, and never change the dataset or sample silently after experiments begin.
 
 ---
 
@@ -459,7 +471,31 @@ The Assignment 2 work is ready only when:
 
 ---
 
-## 14. Final principle
+## 14. Change protocol
+
+When asked to continue or edit:
+
+1. **Inspect** the current notebook (if present), `Assignment2.pdf`, `AGENTS.md`, and any real execution outputs the student provides.
+2. **Explain** the planned change in chat before substantial notebook edits.
+3. **Edit** `/notebook/assign2-ms7556.ipynb` with the smallest sufficient change. Preserve working, verified sections.
+4. **Verify** with real runs (student Colab or local). Never invent outputs.
+5. **Confirm** the change still meets the relevant assignment requirements before moving on.
+6. **Record** durable decisions that should persist across sessions (dataset choice, cleaning rules, selected hyperparameters, seeds) back into `AGENTS.md` or the notebook Markdown when they become fixed.
+
+Suggested implementation order, matching Assignment 1’s stepwise flow:
+
+1. Dataset choice + download into `data/` + Colab loading instructions *(Bank Marketing done)*
+2. Audit, cleaning decisions, stratified 70/15/15 split, leakage-safe preprocessing
+3. GBDT controlled experiments and selected-model diagnostics
+4. MLP controlled experiments and selected-model diagnostics
+5. Validation-based selection + one-time test evaluation + runtime comparison
+6. Report PDF (5–7 pages) + Colab link / LionMail Viewer verification
+
+Do not start report writing before the notebook’s final figures and tables exist. Do not inspect the test set for model selection.
+
+---
+
+## 15. Final principle
 
 The objective is not simply to execute two classifiers. It is to produce a technically correct, reproducible, controlled comparison of gradient-boosted trees and an MLP on one permitted tabular dataset, understand how their learning behavior and preprocessing differ, evaluate them without test leakage, and communicate the evidence accurately.
 
