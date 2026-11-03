@@ -167,6 +167,18 @@ Audit facts: 41,188 × 21; 10 numeric + 10 nominal + target; positive rate 11.27
 
 Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train_mlp/X_valid_mlp/X_test_mlp`, `y_train/y_valid/y_test`, `PREPROCESSING_TIME_SEC`, `RANDOM_STATE`.
 
+### Step 2 design (GBDT; verified in Colab after cap change)
+
+- Fixed: `tree_method="hist"`, `n_estimators=5000` cap, `early_stopping_rounds=50` and `eval_metric="logloss"` in the constructor, `eval_set=[train, validation]` (validation last), `random_state=42`, other params default.
+- Reference config: `learning_rate=0.1`, `max_depth=4`, `subsample=1.0`.
+- Phase A: `learning_rate` ∈ {0.01, 0.1, 0.3}. Phase B: `max_depth` ∈ {2, 4, 6, 8} at best lr. Phase C (regularization): `subsample` ∈ {1.0, 0.8, 0.6} at best lr + depth. 8 configurations total (reference shared).
+- Selection: highest validation AP (`average_precision_score` on `predict_proba[:, 1]`). Colab (source of truth) selected G7: lr 0.01, depth 4, subsample 0.8, AP 0.4923; AP range 0.4818–0.4923. Local macOS/XGBoost 2.1.4 picks a different path (lr 0.1 → G8) because phase-A AP gaps are ~0.002; notebook interpretation follows Colab.
+- Cap raised 3000 → 5000 after Colab showed depth 2 at lr 0.01 hitting the cap; `hit_cap` column flags any unconverged run. Colab rerun: 0 runs at cap (G4 now stops at 3,136), selection unchanged (G7).
+- Colab runtime for the report: Python 3.13.18, pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, xgboost 3.4.1, matplotlib 3.10.0, Linux x86_64, 2 CPU cores.
+- Per-config `fit_sec` is noisy on Colab's shared 2 cores (G8 16.4 s vs G7 6.1 s with similar tree counts). Step 4 must re-time the selected GBDT and MLP with repeats on the same runtime instead of reusing these values.
+- Importance: gain share, top 15. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
+- Variables for later steps: `gbdt_selected`, `GBDT_SELECTED_ID`, `GBDT_FIT_TIME_SEC`, `gbdt_results`.
+
 ### Home Credit Default Risk (not used)
 
 Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
