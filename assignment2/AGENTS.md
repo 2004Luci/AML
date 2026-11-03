@@ -180,6 +180,19 @@ Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train
 - Importance: **total gain** share over trees `0..best_iteration` inclusive (`trees_to_dataframe`), top 15 — not average gain via `get_score("gain")`. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
 - Variables for later steps: `gbdt_selected`, `GBDT_SELECTED_ID`, `GBDT_FIT_TIME_SEC`, `gbdt_results`.
 
+### Step 3 design (MLP; verified in Colab)
+
+- Fixed: `MLPClassifier(solver="adam", activation="relu", max_iter=200, early_stopping=False, random_state=42)`, `batch_size="auto"`, `tol=1e-4`, `n_iter_no_change=10` (defaults) on `X_train_mlp` (scaled numerics + one-hot).
+- Reference config: `hidden_layer_sizes=(64,)`, `learning_rate_init=0.001`, `alpha=0.0001` (scikit-learn defaults for lr/alpha).
+- Phase A: `hidden_layer_sizes` ∈ {(64,), (128, 64), (128, 64, 32)}. Phase B: `learning_rate_init` ∈ {0.0001, 0.001, 0.01} at best architecture. Phase C (regularization): `alpha` ∈ {0.0001, 0.01, 0.1, 1.0} at best architecture + lr. 8 configurations total (matches GBDT).
+- `ConvergenceWarning`s are captured per run, printed with the config ID, and stored in `converged`; other warnings are re-emitted. `final_train_loss` (last `loss_curve_` value) includes the L2 penalty; `train_logloss`/`valid_logloss` are penalty-free and comparable with GBDT.
+- Selection: highest unrounded validation AP from `mlp_records`.
+- No per-epoch validation curve: `partial_fit` replay does not reproduce `fit` exactly, so the selected-model figure shows `loss_curve_` plus final train/validation log loss lines.
+- Colab (source of truth) selected M6: (64,), lr 0.0001, alpha 0.01, validation AP 0.4825; AP range 0.3180–0.4825. M1–M3 overfit at default lr/alpha (AP 0.410 / 0.318 / 0.350; validation log loss up to 1.13). 4 of 8 runs (M1, M2, M4, M5) hit the 200-epoch budget with `ConvergenceWarning`. Local macOS run matches except M3 (133 vs 150 epochs, AP 0.3448 vs 0.3505); selection path identical. Local runs also print spurious numpy/Accelerate `matmul` RuntimeWarnings (macOS BLAS artifact; absent on Colab).
+- Colab `fit_sec` 9–49 s per config (M6 14.2 s); noisy on shared cores, re-time in Step 4.
+- Figures: `fig_mlp_architectures.png`, `fig_mlp_learning_rates.png`, `fig_mlp_selected_loss.png`.
+- Variables for later steps: `mlp_selected`, `MLP_SELECTED_ID`, `MLP_FIT_TIME_SEC`, `mlp_results`.
+
 ### Home Credit Default Risk (not used)
 
 Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
