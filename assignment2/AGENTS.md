@@ -155,10 +155,10 @@ Audit facts: 41,188 × 21; 10 numeric + 10 nominal + target; positive rate 11.27
 
 | Item | Decision |
 |---|---|
-| Target | `y == "yes"` → 1 |
+| Target | `y == "yes"` → 1; any other value (including NaN) raises `ValueError` |
 | `duration` | Dropped |
-| `pdays = 999` | `previously_contacted` 0/1 flag; `pdays` → −1 when no contact |
-| `"unknown"` | Kept as its own category, one-hot encoded |
+| `pdays = 999` | `pdays_recorded` 0/1 flag (1 when a real day count exists); `pdays` → −1 when 999. Named `pdays_recorded`, not `previously_contacted`, because 4,110 rows with 999 have `previous > 0` (from Step 3 onward; Step 1–2 notebooks keep the old name, same values) |
+| `"unknown"` | Kept as its own category, one-hot encoded; its target signal is checked on training rows only (after the split) |
 | NaN | None; no imputer |
 | Duplicates | Kept (no ID; 12 rows) |
 | Split | Two-stage stratified 70/15/15, `random_state=42` → 28,831 / 6,178 / 6,179 rows |
@@ -173,12 +173,25 @@ Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train
 - Reference config: `learning_rate=0.1`, `max_depth=4`, `subsample=1.0`.
 - Phase A: `learning_rate` ∈ {0.01, 0.1, 0.3}. Phase B: `max_depth` ∈ {2, 4, 6, 8} at best lr. Phase C (regularization): `subsample` ∈ {1.0, 0.8, 0.6} at best lr + depth. 8 configurations total (reference shared).
 - Selection: highest validation AP (`average_precision_score` on `predict_proba[:, 1]`). Colab (source of truth) selected G7: lr 0.01, depth 4, subsample 0.8, AP 0.4923; AP range 0.4818–0.4923. Local macOS/XGBoost 2.1.4 picks a different path (lr 0.1 → G8) because phase-A AP gaps are ~0.002; notebook interpretation follows Colab.
-- Cap raised 3000 → 5000 after Colab showed depth 2 at lr 0.01 hitting the cap; `hit_cap` column flags any unconverged run. Colab rerun: 0 runs at cap (G4 now stops at 3,136), selection unchanged (G7).
+- Cap raised 3000 → 5000 after Colab showed depth 2 at lr 0.01 hitting the cap; `hit_cap` column flags any unconverged run (cap reached and best iteration within the last `early_stopping_rounds`). Config IDs are fixed per phase (G1–3, G4–6, G7–8; M1–3, M4–5, M6–8), and re-running a phase replaces its records/models instead of appending. Colab rerun: 0 runs at cap (G4 now stops at 3,136), selection unchanged (G7).
 - Colab runtime for the report: Python 3.13.18, pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, xgboost 3.4.1, matplotlib 3.10.0, Linux x86_64, 2 CPU cores.
 - Per-config `fit_sec` is noisy on Colab's shared 2 cores (G8 16.4 s vs G7 6.1 s with similar tree counts). Step 4 must re-time the selected GBDT and MLP with repeats on the same runtime instead of reusing these values.
 - Selection uses unrounded `valid_AP` from `gbdt_records` (not the 4-dp rounded `gbdt_results` table).
 - Importance: **total gain** share over trees `0..best_iteration` inclusive (`trees_to_dataframe`), top 15 — not average gain via `get_score("gain")`. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
 - Variables for later steps: `gbdt_selected`, `GBDT_SELECTED_ID`, `GBDT_FIT_TIME_SEC`, `gbdt_results`.
+
+### Step 3 design (MLP; verified in Colab)
+
+- Fixed: `MLPClassifier(solver="adam", activation="relu", max_iter=200, early_stopping=False, random_state=42)`, `batch_size="auto"`, `tol=1e-4`, `n_iter_no_change=10` (defaults) on `X_train_mlp` (scaled numerics + one-hot).
+- Reference config: `hidden_layer_sizes=(64,)`, `learning_rate_init=0.001`, `alpha=0.0001` (scikit-learn defaults for lr/alpha).
+- Phase A: `hidden_layer_sizes` ∈ {(64,), (128, 64), (128, 64, 32)}. Phase B: `learning_rate_init` ∈ {0.0001, 0.001, 0.01} at best architecture. Phase C (regularization): `alpha` ∈ {0.0001, 0.01, 0.1, 1.0} at best architecture + lr. 8 configurations total (matches GBDT).
+- `ConvergenceWarning`s are captured per run, printed with the config ID, and stored in `converged`; other warnings are re-emitted. `final_train_loss` (last `loss_curve_` value) includes the L2 penalty; `train_logloss`/`valid_logloss` are penalty-free and comparable with GBDT.
+- Selection: highest unrounded validation AP from `mlp_records`.
+- No per-epoch validation curve: `partial_fit` replay does not reproduce `fit` exactly, so the selected-model figure shows `loss_curve_` plus final train/validation log loss lines.
+- Colab (source of truth) selected M6: (64,), lr 0.0001, alpha 0.01, validation AP 0.4825; AP range 0.3180–0.4825. M1–M3 overfit at default lr/alpha (AP 0.410 / 0.318 / 0.350; validation log loss up to 1.13). 4 of 8 runs (M1, M2, M4, M5) hit the 200-epoch budget with `ConvergenceWarning`. Local macOS run matches except M3 (133 vs 150 epochs, AP 0.3448 vs 0.3505); selection path identical. Local runs also print spurious numpy/Accelerate `matmul` RuntimeWarnings (macOS BLAS artifact; absent on Colab).
+- Colab `fit_sec` 9–49 s per config (M6 14.2 s); noisy on shared cores, re-time in Step 4.
+- Figures: `fig_mlp_architectures.png`, `fig_mlp_learning_rates.png`, `fig_mlp_selected_loss.png`.
+- Variables for later steps: `mlp_selected`, `MLP_SELECTED_ID`, `MLP_FIT_TIME_SEC`, `mlp_results`.
 
 ### Home Credit Default Risk (not used)
 
