@@ -12,7 +12,7 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Dual notebook tracks scaffolded (`notebook/final/` + `notebook/learning/`)
 - [x] Step 0 scaffold kept (`assign2-bank_step0.ipynb` in both tracks)
 - [x] Step 1 data preparation, 70/15/15 split, and preprocessing implemented (`assign2-bank_step1.ipynb`); Colab run pending
-- [ ] Step 2 GBDT experiments completed
+- [x] Step 2 GBDT experiments implemented (`assign2-bank_step2.ipynb`, 8 configurations); verified in Colab
 - [ ] Step 3 MLP experiments completed
 - [ ] Step 4 validation-based selection and one-time test evaluation completed
 - [ ] Consolidated `final/assign2-ms7556.ipynb` verified top-to-bottom in Colab
@@ -47,10 +47,12 @@ assignment2/
 ├── notebook/
 │   ├── final/                       # Submission-quality step notebooks
 │   │   ├── assign2-bank_step0.ipynb
-│   │   └── assign2-bank_step1.ipynb
+│   │   ├── assign2-bank_step1.ipynb
+│   │   └── assign2-bank_step2.ipynb
 │   └── learning/                    # Learning / report-prep step notebooks
 │       ├── assign2-bank_step0.ipynb
-│       └── assign2-bank_step1.ipynb
+│       ├── assign2-bank_step1.ipynb
+│       └── assign2-bank_step2.ipynb
 └── report/
     └── Assignment2_Report.pdf      # Final 5–7 page report
 ```
