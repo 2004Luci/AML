@@ -176,7 +176,8 @@ Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train
 - Cap raised 3000 → 5000 after Colab showed depth 2 at lr 0.01 hitting the cap; `hit_cap` column flags any unconverged run. Colab rerun: 0 runs at cap (G4 now stops at 3,136), selection unchanged (G7).
 - Colab runtime for the report: Python 3.13.18, pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, xgboost 3.4.1, matplotlib 3.10.0, Linux x86_64, 2 CPU cores.
 - Per-config `fit_sec` is noisy on Colab's shared 2 cores (G8 16.4 s vs G7 6.1 s with similar tree counts). Step 4 must re-time the selected GBDT and MLP with repeats on the same runtime instead of reusing these values.
-- Importance: gain share, top 15. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
+- Selection uses unrounded `valid_AP` from `gbdt_records` (not the 4-dp rounded `gbdt_results` table).
+- Importance: **total gain** share over trees `0..best_iteration` inclusive (`trees_to_dataframe`), top 15 — not average gain via `get_score("gain")`. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
 - Variables for later steps: `gbdt_selected`, `GBDT_SELECTED_ID`, `GBDT_FIT_TIME_SEC`, `gbdt_results`.
 
 ### Home Credit Default Risk (not used)
