@@ -14,7 +14,7 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Step 1 data preparation, 70/15/15 split, and preprocessing implemented (`assign2-bank_step1.ipynb`); Colab run pending
 - [x] Step 2 GBDT experiments implemented (`assign2-bank_step2.ipynb`, 8 configurations); verified in Colab
 - [x] Step 3 MLP experiments implemented (`assign2-bank_step3.ipynb`, 8 configurations); verified in Colab
-- [ ] Step 4 validation-based selection and one-time test evaluation completed
+- [x] Step 4 final comparison implemented (`assign2-bank_step4.ipynb`: one-time test evaluation, PR curves, confusion matrices, timing); verified in Colab
 - [ ] Consolidated `final/assign2-ms7556.ipynb` verified top-to-bottom in Colab
 - [ ] 5–7 page report completed and checked
 - [ ] Colab Viewer access verified using Columbia LionMail
@@ -49,12 +49,14 @@ assignment2/
 │   │   ├── assign2-bank_step0.ipynb
 │   │   ├── assign2-bank_step1.ipynb
 │   │   ├── assign2-bank_step2.ipynb
-│   │   └── assign2-bank_step3.ipynb
+│   │   ├── assign2-bank_step3.ipynb
+│   │   └── assign2-bank_step4.ipynb
 │   └── learning/                    # Learning / report-prep step notebooks
 │       ├── assign2-bank_step0.ipynb
 │       ├── assign2-bank_step1.ipynb
 │       ├── assign2-bank_step2.ipynb
-│       └── assign2-bank_step3.ipynb
+│       ├── assign2-bank_step3.ipynb
+│       └── assign2-bank_step4.ipynb
 └── report/
     └── Assignment2_Report.pdf      # Final 5–7 page report
 ```
