@@ -15,8 +15,8 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Step 2 GBDT experiments implemented (`assign2-bank_step2.ipynb`, 8 configurations); verified in Colab
 - [x] Step 3 MLP experiments implemented (`assign2-bank_step3.ipynb`, 8 configurations); verified in Colab
 - [x] Step 4 final comparison implemented (`assign2-bank_step4.ipynb`: one-time test evaluation, PR curves, confusion matrices, timing); verified in Colab
-- [ ] Consolidated `final/assign2-ms7556.ipynb` verified top-to-bottom in Colab
-- [ ] 5–7 page report completed and checked
+- [ ] Consolidated `final/assign2-ms7556.ipynb` (copy of Step 4 final + author line) verified top-to-bottom in Colab
+- [x] 7-page report drafted (`report/Assignment2_Report.pdf`); Colab link still to be inserted
 - [ ] Colab Viewer access verified using Columbia LionMail
 
 **Chosen dataset: Bank Marketing.** Local file: `data/bank-additional-full.csv` (semicolon-separated; 41,188 rows). Drop `duration`; explain `pdays=999` and literal `unknown` categories. Home Credit is not used.
@@ -50,7 +50,8 @@ assignment2/
 │   │   ├── assign2-bank_step1.ipynb
 │   │   ├── assign2-bank_step2.ipynb
 │   │   ├── assign2-bank_step3.ipynb
-│   │   └── assign2-bank_step4.ipynb
+│   │   ├── assign2-bank_step4.ipynb
+│   │   └── assign2-ms7556.ipynb     # Consolidated submission notebook (Colab link)
 │   └── learning/                    # Learning / report-prep step notebooks
 │       ├── assign2-bank_step0.ipynb
 │       ├── assign2-bank_step1.ipynb
@@ -58,7 +59,8 @@ assignment2/
 │       ├── assign2-bank_step3.ipynb
 │       └── assign2-bank_step4.ipynb
 └── report/
-    └── Assignment2_Report.pdf      # Final 5–7 page report
+    ├── Assignment2_Report.pdf      # Final 5–7 page report
+    └── build_report.py             # Regenerates the PDF from assets/ (set COLAB_URL first)
 ```
 
 ## What each part contains
