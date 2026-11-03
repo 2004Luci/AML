@@ -193,6 +193,15 @@ Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train
 - Figures: `fig_mlp_architectures.png`, `fig_mlp_learning_rates.png`, `fig_mlp_selected_loss.png`.
 - Variables for later steps: `mlp_selected`, `MLP_SELECTED_ID`, `MLP_FIT_TIME_SEC`, `mlp_results`.
 
+### Step 4 design (final comparison; verified in Colab)
+
+- Section 7 of `assign2-bank_step4.ipynb`. Selections are fixed from Sections 5.4/6.4 (validation AP); the test set is first used in 7.3.
+- Timing (7.2): `sklearn.base.clone` of each selected model refitted `TIMING_REPEATS = 3` times on the same runtime; report median/min/max fit time. GBDT refit uses `eval_set=[(X_valid_tree, y_valid)]` only (early stopping needs validation only; training-set monitoring was for plots). Asserts confirm each refit reproduces the selected model (same `best_iteration`, same validation probabilities). Preprocessing time = median of 3 `fit_transform_splits` runs per preprocessor (fit on train + transform train/valid/test), reported separately.
+- Test metrics (7.3): AP from `predict_proba[:, 1]`; accuracy/precision/recall/F1 for the positive class at threshold 0.5 (`proba >= 0.5`), `zero_division=0`; no threshold tuning. One comparison table (models as rows).
+- Figures: `fig_pr_curves.png` (both PR curves, test positive-class rate as dashed reference, 0.5-threshold markers) and `fig_confusion_matrices.png` (side by side). 7.6 prints the reproducibility/runtime summary (versions, platform, cores, CPU only, seed, split).
+- Colab (source of truth; G7 vs M6): test AP 0.4819 vs 0.4771; at 0.5, accuracy 0.9022 / 0.9003, precision 0.6917 / 0.6460, recall 0.2385 / 0.2543, F1 0.3547 / 0.3649, predicted positives 240 / 274 (696 actual of 6,179; rate 0.1126). Confusion (TN, FP, FN, TP): GBDT 5409, 74, 530, 166; MLP 5386, 97, 519, 177. Median fit (3 refits, 2-core CPU): 3.943 s (3.923–5.224) vs 13.329 s (13.304–13.418); preprocessing 0.083 / 0.081 s. Interpretation: ranking performance tied within noise; GBDT ~3.4× faster and far less tuning-sensitive.
+- Local macOS run differs only because local GBDT selects G8 (test AP 0.4802); MLP numbers identical.
+
 ### Home Credit Default Risk (not used)
 
 Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
