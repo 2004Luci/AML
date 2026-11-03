@@ -1,9 +1,10 @@
 """Build report/Assignment2_Report.pdf from the Colab-verified results.
 
 Usage (from the repo root):
-    .venv/bin/python assignment2/report/build_report.py
+    python assignment2/report/build_report.py --colab "https://colab.research.google.com/drive/<id>"
 """
 
+import argparse
 from pathlib import Path
 
 from PIL import Image as PILImage
@@ -26,25 +27,30 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-COLAB_URL = "[INSERT COLAB LINK - shared with LionMail Viewer access]"
+COLAB_PLACEHOLDER = '<font color="#C00000"><b>[COLAB LINK MISSING - rebuild with --colab URL]</b></font>'
+COLAB_URL = COLAB_PLACEHOLDER  # set from --colab in main()
 GITHUB_URL = "https://github.com/2004Luci/AML"
 
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE.parent / "assets"
 OUT = HERE / "Assignment2_Report.pdf"
 
-FONT_DIR = Path("/System/Library/Fonts/Supplemental")
-for name, file in {
-    "Body": "Times New Roman.ttf",
-    "Body-Bold": "Times New Roman Bold.ttf",
-    "Body-Italic": "Times New Roman Italic.ttf",
-    "Body-BoldItalic": "Times New Roman Bold Italic.ttf",
-    "Sans": "Arial.ttf",
-    "Sans-Bold": "Arial Bold.ttf",
-    "Sans-Italic": "Arial Italic.ttf",
-    "Sans-BoldItalic": "Arial Bold Italic.ttf",
-}.items():
-    pdfmetrics.registerFont(TTFont(name, str(FONT_DIR / file)))
+# macOS Times New Roman / Arial if present; otherwise the metric-compatible Liberation fonts (Linux, Colab).
+MAC_FONTS = Path("/System/Library/Fonts/Supplemental")
+LIB_FONTS = Path("/usr/share/fonts/truetype/liberation")
+FONT_FILES = {
+    "Body": ("Times New Roman.ttf", "LiberationSerif-Regular.ttf"),
+    "Body-Bold": ("Times New Roman Bold.ttf", "LiberationSerif-Bold.ttf"),
+    "Body-Italic": ("Times New Roman Italic.ttf", "LiberationSerif-Italic.ttf"),
+    "Body-BoldItalic": ("Times New Roman Bold Italic.ttf", "LiberationSerif-BoldItalic.ttf"),
+    "Sans": ("Arial.ttf", "LiberationSans-Regular.ttf"),
+    "Sans-Bold": ("Arial Bold.ttf", "LiberationSans-Bold.ttf"),
+    "Sans-Italic": ("Arial Italic.ttf", "LiberationSans-Italic.ttf"),
+    "Sans-BoldItalic": ("Arial Bold Italic.ttf", "LiberationSans-BoldItalic.ttf"),
+}
+for name, (mac_file, linux_file) in FONT_FILES.items():
+    path = MAC_FONTS / mac_file if (MAC_FONTS / mac_file).exists() else LIB_FONTS / linux_file
+    pdfmetrics.registerFont(TTFont(name, str(path)))
 pdfmetrics.registerFontFamily(
     "Body", normal="Body", bold="Body-Bold", italic="Body-Italic", boldItalic="Body-BoldItalic"
 )
@@ -168,7 +174,8 @@ def build_story(pages):
         P("Gradient-boosted decision trees vs. a multi-layer perceptron on UCI Bank Marketing", subtitle),
         Spacer(1, 6),
         P("<b>Author:</b> Mit Sheth | ms7556", small_c),
-        P("<b>Colab notebook:</b> assign2-ms7556.ipynb (link at the end of this report)", small_c),
+        P(f"<b>Colab notebook:</b> {COLAB_URL}", small_c),
+        P("(the same link is repeated at the end of this report)", small_c),
         Spacer(1, 10),
     ]
 
@@ -178,8 +185,8 @@ def build_story(pages):
             ["Assignment step", "Report section", "Pages"],
             ["Step 1 \u2013 Data preparation (audit, cleaning, split, preprocessing)", "2.1, 2.2", pg("m1", "m2")],
             ["Step 2 \u2013 Gradient-boosted trees (XGBoost): setup, tuning, curves, importance", "2.3, 3.1", pg("m3", "r1")],
-            ["Step 3 \u2013 Neural network (MLPClassifier): setup, tuning, loss curves", "2.4, 3.2", pg("m4", "r2")],
-            ["Step 4 \u2013 Evaluation and comparison (test metrics, PR curves, confusion matrices, timing, discussion)", "2.5, 3.3, 4", pg("m5", "r3", "d")],
+            ["Step 3 \u2013 Neural network (MLPClassifier): setup, tuning, loss curves", "2.3, 3.2", pg("m3", "r2")],
+            ["Step 4 \u2013 Evaluation and comparison (test metrics, PR curves, confusion matrices, timing, discussion)", "2.4, 3.3, 4", pg("m5", "r3", "d")],
             ["Step 5 \u2013 Report: Introduction, Methods, Results, Discussion, AI disclosure, references", "1\u20136", f"1\u2013{pg('ref')}"],
         ], [4.45 * inch, 1.25 * inch, 0.8 * inch]),
     ))
@@ -251,45 +258,45 @@ def build_story(pages):
     s.append(P(
         "A two-stage stratified split (random_state = 42) produced <b>train 28,831 / validation 6,178 / test 6,179</b> rows "
         "(70/15/15) with 3,248 / 696 / 696 positives, so every split keeps the 11.3% positive rate. Preprocessing is a "
-        "<i>ColumnTransformer</i> fitted on training rows only: <i>OneHotEncoder(handle_unknown=\"ignore\")</i> expands the 10 "
-        "nominal columns to 53 indicators, and the 10 numeric columns (including <i>pdays_recorded</i>) pass through, giving "
+        "column transformer fitted on training rows only: a one-hot encoder (categories unseen in training are ignored) "
+        "expands the 10 nominal columns to 53 indicators, and the 10 numeric columns (including <i>pdays_recorded</i>) pass through, giving "
         "<b>63 features for both models</b>. The only difference is that the MLP's numeric columns are standardized with a "
-        "<i>StandardScaler</i> fitted on training rows; trees split on value order and need no scaling. Validation and test "
+        "standard scaler fitted on training rows; trees split on value order and need no scaling. Validation and test "
         "rows are only transformed with the training-fitted preprocessors, and the test set was not scored until both final "
         "models were fixed."
     ))
 
-    s.append(Heading("2.3 Gradient-boosted trees (Step 2)", h2, "m3"))
+    s.append(Heading("2.3 Model setup and tuning (Steps 2 and 3)", h2, "m3"))
+    s += table_block(
+        "Table 3. Fixed settings and controlled experiments for both model families (8 configurations each).",
+        table([
+            ["Aspect", "GBDT (XGBoost XGBClassifier)", "MLP (scikit-learn MLPClassifier)"],
+            ["Input", "63 features; numeric columns unscaled", "Same 63 features; numeric columns standardized"],
+            ["Fixed settings", "Histogram tree method (<i>tree_method</i> = hist); seed 42; other settings at defaults",
+             "Adam solver, ReLU activation, batch size 200; seed 42; other settings at defaults"],
+            ["Training budget", "Up to 5,000 trees, a safety cap only: an earlier 3,000 cap was hit by the depth-2 run, "
+             "so it was raised; no run reaches 5,000",
+             "Up to 200 epochs (<i>max_iter</i>); a run ends earlier when training loss improves by less than 1e-4 for "
+             "10 consecutive epochs"],
+            ["Stopping and monitoring", "Binary log loss on training and validation sets, validation listed last; early "
+             "stopping after 50 rounds without validation improvement; predictions use trees up to <i>best_iteration</i>",
+             "Built-in early stopping off, so all training rows update the weights; <i>ConvergenceWarning</i>s are "
+             "captured and recorded per run, not silenced"],
+            ["Phase A", "Learning rate 0.01, 0.1, 0.3 (depth 4)", "Hidden layers (64), (128, 64), (128, 64, 32) "
+             "(learning rate 1e-3, alpha 1e-4)"],
+            ["Phase B", "Max depth 2, 4, 6, 8", "Initial learning rate 1e-4, 1e-3, 1e-2"],
+            ["Phase C (regularization)", "Row subsample 1.0, 0.8, 0.6", "L2 penalty alpha 1e-4, 1e-2, 1e-1, 1.0"],
+        ], [1.25 * inch, 2.9 * inch, 2.95 * inch], bold_first_col=True),
+        splittable=True,
+    )
     s.append(P(
-        "<b>Setup.</b> <i>XGBClassifier(tree_method=\"hist\", n_estimators=5000, early_stopping_rounds=50, "
-        "eval_metric=\"logloss\", random_state=42)</i>. Training and validation sets are both passed to <i>eval_set</i> so "
-        "both loss curves are recorded; the validation set is listed last, which makes it the one that controls early "
-        "stopping. Training stops after 50 rounds without improvement in validation log loss, and predictions use the trees "
-        "up to <i>best_iteration</i>. The 5,000-tree cap is only a safety limit: an earlier 3,000 cap was reached by the "
-        "depth-2 model, so it was raised, and no run reaches 5,000."
-    ))
-    s.append(P(
-        "<b>Tuning</b> (8 configurations, one factor at a time, each phase keeping the best value of the previous phase): "
-        "<b>A</b> learning rate in {0.01, 0.1, 0.3} at depth 4; <b>B</b> max_depth in {2, 4, 6, 8}; <b>C</b> row "
-        "subsample in {1.0, 0.8, 0.6}. Validation log loss is the early-stopping monitor; validation AP is the selection "
-        "metric."
+        "Each phase changes one setting and carries forward the best value of the previous phase, so phases share a "
+        "reference run. Within an XGBoost run, validation log loss decides when to stop adding trees; across runs, "
+        "validation AP selects the configuration. For the MLP, <i>max_iter</i> is a fixed training budget, identical for "
+        "every run, and the shared external validation set (not an internal holdout) is used only to compare configurations."
     ))
 
-    s.append(Heading("2.4 Neural network (Step 3)", h2, "m4"))
-    s.append(P(
-        "<b>Setup.</b> <i>MLPClassifier(solver=\"adam\", activation=\"relu\", max_iter=200, early_stopping=False, "
-        "random_state=42)</i> on the scaled features. Internal early stopping is disabled so that the model trains on all "
-        "training rows and the external validation set is used only for selection. Here <i>max_iter</i> counts epochs; "
-        "Adam stops earlier if the training loss improves by less than 1e-4 for 10 consecutive epochs. "
-        "<i>ConvergenceWarning</i>s are captured and recorded for each run rather than silenced."
-    ))
-    s.append(P(
-        "<b>Tuning</b> (8 configurations, matching the GBDT budget): <b>A</b> architecture in {(64), (128, 64), "
-        "(128, 64, 32)} at the defaults (learning rate 1e-3, alpha 1e-4); <b>B</b> learning_rate_init in {1e-4, 1e-3, "
-        "1e-2}; <b>C</b> L2 penalty alpha in {1e-4, 1e-2, 1e-1, 1.0}."
-    ))
-
-    s.append(Heading("2.5 Selection, evaluation and timing (Step 4)", h2, "m5"))
+    s.append(Heading("2.4 Selection, evaluation and timing (Step 4)", h2, "m5"))
     s.append(P(
         "Each family's final configuration is the one with the highest validation AP (computed from predicted "
         "probabilities, unrounded). The test set is then scored once. AP is threshold-free; accuracy, precision, recall "
@@ -304,7 +311,7 @@ def build_story(pages):
     s.append(Heading("3. Results", h1, "results"))
     s.append(Heading("3.1 GBDT results (Step 2)", h2, "r1"))
     s.append(P(
-        "Table 3 lists all eight GBDT runs. <b>Learning rate</b> mainly changes speed, not the end point: 0.01 needs about 1,300 trees and 0.3 needs only 50, "
+        "Table 4 lists all eight GBDT runs. <b>Learning rate</b> mainly changes speed, not the end point: 0.01 needs about 1,300 trees and 0.3 needs only 50, "
         "yet validation AP stays within 0.0024. Larger steps reach the validation minimum in fewer rounds and start "
         "overfitting sooner, so early stopping halts them earlier. <b>Depth</b> shows the bias\u2013variance trade-off "
         "directly: depth 2 has the highest validation loss and needs over 3,000 trees (underfitting), while depth 8 fits "
@@ -314,7 +321,7 @@ def build_story(pages):
         "at the validation minimum of 0.266."
     ))
     s.append(table_block(
-        caption_text="Table 3. GBDT configurations. Trees = best_iteration + 1; gap = validation \u2212 train log loss. Selected row "
+        caption_text="Table 4. GBDT configurations. Trees = best_iteration + 1; gap = validation \u2212 train log loss. Selected row "
         "highlighted.",
         tbl=table([
             ["Config", "Phase", "Learning rate", "Depth", "Subsample", "Trees", "Train LL", "Valid LL", "Gap", "Valid AP"],
@@ -353,7 +360,7 @@ def build_story(pages):
 
     s.append(table_block(
         lead=[Heading("3.2 MLP results (Step 3)", h2, "r2")],
-        caption_text="Table 4. MLP configurations (\u201cConv.\u201d = finished before max_iter without a ConvergenceWarning). "
+        caption_text="Table 5. MLP configurations (\u201cConv.\u201d = finished before max_iter without a ConvergenceWarning). "
         "Selected row highlighted.",
         tbl=table([
             ["Config", "Phase", "Hidden layers", "LR", "Alpha", "Epochs", "Conv.", "Train LL", "Valid LL", "Gap", "Valid AP"],
@@ -374,19 +381,19 @@ def build_story(pages):
     s.append(P(
         "At the default learning rate, <b>larger networks memorize the training set</b>: the two-layer and three-layer models "
         "reach a training log loss of about 0.05 while validation loss rises above 0.9, and validation AP falls to "
-        "0.32\u20130.35 (Table 4, rows M1\u2013M3). One layer of 64 units is the least overfit, so it was carried forward. Lowering the "
+        "0.32\u20130.35 (Table 5, rows M2\u2013M3). One layer of 64 units is the least overfit, so it was carried forward. Lowering the "
         "<b>learning rate</b> to 1e-4 nearly closed the gap (0.008) and raised AP to 0.48. At 1e-2 the training loss fell "
         "lowest of the three, but validation loss rose to 0.475: faster optimization only meant faster overfitting. "
         "<b>L2 regularization</b> then trades variance for bias: alpha = 0.01 (M6) gave the best validation AP and "
         "converged in 135 epochs, while alpha = 1.0 underfits slightly (validation loss below training loss, AP 0.467). "
         "The selected model's <i>loss_curve_</i> (Figure 3) falls steeply and then plateaus, ending close to its "
-        "validation loss. Four runs used all 200 epochs and raised ConvergenceWarnings, which are recorded in Table 4. "
+        "validation loss. Four runs used all 200 epochs and raised ConvergenceWarnings, which are recorded in Table 5. "
         "These warnings mean the optimizer had not finished, not that training failed, and the selected model did converge."
     ))
 
     s.append(table_block(
         lead=[Heading("3.3 Final comparison on the test set (Step 4)", h2, "r3")],
-        caption_text="Table 5. Selected models on the held-out test set (6,179 rows, 696 positives, prevalence 0.1126). "
+        caption_text="Table 6. Selected models on the held-out test set (6,179 rows, 696 positives, prevalence 0.1126). "
         "Threshold 0.5 for the threshold-based metrics; times are medians of three refits (range in parentheses).",
         tbl=table([
             ["Metric", "GBDT (XGBoost G7)", "MLP (M6)"],
@@ -473,25 +480,28 @@ def build_story(pages):
 
     # ---------------------------------------------------------- 5. AI disclosure
     s.append(Heading("5. AI Tool Usage Disclosure", h1, "ai"))
-    s.append(P(
-        "<b>Tools used:</b> ChatGPT (OpenAI), Cursor (AI coding agent in the editor) and CodeRabbit (automated "
-        "pull-request reviews on GitHub)."
-    ))
-    s.append(P(
-        "<b>How they contributed.</b> The AI tools helped plan and explain the step-by-step workflow, generated code for "
-        "every stage (audit, cleaning, split, preprocessing, both experiments, evaluation, plots, timing), explained "
-        "concepts such as early stopping, average precision and ConvergenceWarnings, helped debug, and drafted this report "
-        "from the recorded Colab results. CodeRabbit's pull-request reviews led to concrete fixes, such as selecting on "
-        "unrounded validation AP, computing importance over the trees actually used, and verifying every timing refit."
-    ))
-    s.append(P(
-        "<b>My contribution.</b> I chose the dataset and the order of work, set the constraints (no leakage, the same split "
-        "and features for both models, a test set used once, matched tuning budgets), and approved or rejected each design "
-        "decision. I ran every notebook end-to-end in Google Colab and checked the outputs against the expected behaviour. "
-        "I triaged every review comment, accepting only the findings that were still valid after checking them against the "
-        "current code, and I confirmed that every number, table and figure in this report matches the Colab run. I "
-        "understand and can explain each step and result."
-    ))
+    s.append(P("5.1 AI tools used", h2))
+    s.append(P("ChatGPT (OpenAI); Cursor (AI coding agent in the editor); CodeRabbit (automated pull-request reviews on "
+               "GitHub)."))
+    s.append(P("5.2 What the AI tools contributed", h2))
+    s += bullets([
+        "Planned and explained the step-by-step workflow, and generated code for every stage: audit, cleaning, split, "
+        "preprocessing, both tuning experiments, evaluation, plots and timing.",
+        "Explained concepts (early stopping, average precision, ConvergenceWarnings, total-gain importance), helped debug, "
+        "and drafted this report from the recorded Colab results.",
+        "CodeRabbit reviews led to concrete fixes: selecting on unrounded validation AP, computing importance only over "
+        "the trees actually used for prediction, and checking that every timing refit reproduces the selected model.",
+    ])
+    s.append(P("5.3 My contribution and verification", h2))
+    s += bullets([
+        "Chose the dataset and the order of work, and set the constraints: no leakage, the same split and features for "
+        "both models, a test set used once, and matched tuning budgets. Approved or rejected each design decision.",
+        "Ran the notebook end-to-end in Google Colab, checked outputs against expected behaviour (for example, raising "
+        "the tree cap after the depth-2 run hit it), and triaged every review comment, keeping only findings still valid "
+        "against the current code.",
+        "Confirmed that every number, table and figure in this report matches the Colab run; I understand and can "
+        "explain each step and result.",
+    ])
 
     # ---------------------------------------------------------- 6. references
     s.append(Heading("6. References", h1, "ref"))
@@ -516,6 +526,13 @@ def build_story(pages):
 
 
 def main():
+    global COLAB_URL
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--colab", default="", help="Colab share link (LionMail Viewer access)")
+    url = parser.parse_args().colab.strip()
+    COLAB_URL = f'<link href="{url}" color="blue"><u>{url}</u></link>' if url else COLAB_PLACEHOLDER
+    if not url:
+        print("WARNING: no --colab link given; the PDF shows a red placeholder (-10 points if submitted).")
     pages = {}
     for _ in range(2):
         doc = ReportDoc(str(OUT), title="Assignment 2: From Trees to Neural Networks", author="Mit Sheth (ms7556)")
