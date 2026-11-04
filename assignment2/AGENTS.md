@@ -1,595 +1,273 @@
-# Assignment 2 — AI/ML Workflow Guardrails
+# Assignment 2 — Workflow Guardrails
 
-## 0. Purpose and source of truth
+## 0. Purpose
 
-This repository contains the work for **Assignment 2: From Trees to Neural Networks**.
-
-The authoritative specification is `Assignment2.pdf`. It is the source of truth for the objective, permitted datasets, required experiments, evaluation procedure, report requirements, rubric, AI disclosure, and submission/access rules. Do not replace its instructions with generic machine-learning conventions or assumptions from Assignment 1.
+This folder holds **Assignment 2: From Trees to Neural Networks** (COMS W4995 Applied Machine Learning).
 
 ### Deliverables
 
-1. A runnable Jupyter/Colab notebook (`.ipynb`) containing setup, data-loading instructions, code, explanations, and outputs needed to reproduce the results.
-2. A **5–7 page PDF report**, including figures and references, submitted on Gradescope. The report must include a page map showing where Steps 1–5 are addressed.
+| Deliverable | Path |
+|---|---|
+| Runnable notebook (Colab, outputs saved) | `/notebook/assign2-ms7556.ipynb` |
+| Written report (5–7 pages, no code) | `/report/Assignment2_Report.pdf` |
+| Report figures | `/assets/` |
+| Assignment handout | `Assignment2.pdf` |
 
-The Google Colab notebook link must appear **at the very end of the PDF report**. Set notebook sharing so anyone signed in with a Columbia LionMail account can open it as a Viewer without requesting access. Verify this before submission; the handout states that inaccessible notebooks incur a 10-point deduction.
+`Assignment2.pdf` is the source of truth for requirements, experiments, metrics, report rules, rubric, AI disclosure, and Colab access.
 
-### Required notebook locations
+The notebook is the technical deliverable: all code, outputs, figures, and technical reasoning live there. The PDF is written from those results. Repository layout is secondary.
 
-Maintain the two notebook tracks in these exact directories (same dual-track workflow as Assignment 1; folder names updated for clarity):
-
-- **Final / submission notebooks:** `/notebook/final/`
-- **Learning notebooks:** `/notebook/learning/`
-
-For step `N`, use:
-
-- `/notebook/final/assign2-bank_step<N>.ipynb`
-- `/notebook/learning/assign2-bank_step<N>.ipynb`
-
-After all steps are complete, consolidate the submission track into the Colab deliverable:
-
-- `/notebook/final/assign2-ms7556.ipynb`
-
-Do not place step-specific notebooks elsewhere unless explicitly requested. The `.ipynb` is the primary technical deliverable; repository polish must not take priority over notebook correctness, reproducibility, student understanding, or assignment compliance.
-
-### Rubric weights (from `Assignment2.pdf`)
-
-| Category | Weight | Focus |
-|---|---|---|
-| Data Preparation | 15% | Correct split and preprocessing; justified choices; no leakage |
-| GBDT Implementation | 15% | Correct training, controlled tuning, early stopping, learning dynamics |
-| MLP Implementation | 15% | Correct scaling, training, controlled tuning, learning dynamics |
-| GBDT vs. MLP Comparison | 25% | Fair comparison of performance, time, and behavior; thoughtful analysis |
-| Evaluation & Visualization | 20% | Correct metrics and clear required figures embedded in the PDF |
-| AI Tool Usage Disclosure | 10% | Transparent account of AI assistance and student verification |
-
-Comparison and evaluation together are 45% of the grade. Do not underinvest in fair comparison, required figures, or interpretation just to add more tuning runs.
+The notebook reads `bank-additional-full.csv` from its working directory (Colab upload) and otherwise downloads the same file from this repository's `assignment2/data/` on GitHub. Colab is the source of truth for every reported number.
 
 ---
 
-## 1. Non-negotiable working protocol
+# 1. Workflow for each change
 
-For every meaningful assignment step, follow this three-part sequence (matching Assignment 1).
+## A — Explain in chat
 
-### A. Explain before implementing
+Before a meaningful change, explain:
 
-Explain the work in chat before making substantial notebook changes. Assume the student may be learning the practical concepts for the first time. Cover:
+1. What is being done
+2. Why
+3. What problem it solves
+4. What important code means
+5. Alternatives and why this choice
+6. Risks / failure modes
+7. How it satisfies `Assignment2.pdf`
+8. What the student should be able to defend in review
+9. What belongs in the PDF report
 
-1. What is being done and why.
-2. The problem it solves and the underlying concept.
-3. What the important code and parameters mean.
-4. Reasonable alternatives and why the selected approach is appropriate.
-5. Risks, assumptions, and possible failure modes.
-6. How the choice satisfies the assignment.
-7. What the student should be able to explain in a code review/oral discussion.
-8. What outputs, figures, and observations belong in the report.
+Do not assume prior ML background.
 
-Do not merely paste code without teaching the decision behind it.
+## B — Update the notebook
 
-### B. Update the final / submission notebook
+Edit `/notebook/assign2-ms7556.ipynb`.
 
-Create/update the submission-quality notebook for the current step:
+The notebook must:
 
-`/notebook/final/assign2-bank_step<N>.ipynb`
+- run top-to-bottom without errors in Colab
+- be reproducible (`RANDOM_STATE = 42`, documented split)
+- use clear names and short comments only where intent is non-obvious
+- use Markdown for methodology, decisions, and interpretation
+- show real outputs and figures (never invent results)
+- avoid TODOs, placeholders, dead code, and meta/process notes aimed at graders
+- comply with `Assignment2.pdf`
 
-This is the primary deliverable track. Preserve working sections and previous verified decisions. Avoid broad rewrites when a small, targeted edit is sufficient.
+Student-facing teaching can stay in chat. The notebook itself should read as a finished submission.
 
-The final notebook must:
+## C — Re-run and re-sync
 
-- run top-to-bottom in the intended Jupyter/Colab environment;
-- include setup and clear data-loading instructions;
-- be reproducible through fixed, documented random seeds;
-- use clear names and modular, readable cells;
-- contain professional Markdown explaining methodology and interpretation;
-- include actual, relevant outputs and report-ready figures;
-- avoid tutorial clutter, temporary debugging cells, stale output, and unresolved TODOs in the final version;
-- avoid dead code and unnecessary imports;
-- avoid submission-noise aimed at graders or process notes such as “checkpoint”, “current scope”, “notebook goal”, or step-handoff text;
-- never contain fabricated results or claims of execution that did not occur.
-
-Production-style does not mean explanation-free: retain enough Markdown for a reader to understand the analysis and the reasons for important decisions.
-
-### C. Update the learning notebook
-
-Create/update the parallel learning notebook for the same step:
-
-`/notebook/learning/assign2-bank_step<N>.ipynb`
-
-This is **not** the Colab submission artifact. It should use the same correct implementation as the final notebook, plus:
-
-- detailed explanations and conceptual reminders;
-- TODOs and “why are we doing this?” notes;
-- questions the student should be able to answer;
-- report-writing prompts;
-- places to record observations after Colab runs;
-- reminders about assignment/rubric compliance.
-
-The learning notebook may be verbose and pedagogical. Keep it in sync with the final notebook for each step.
-
-### D. Run, inspect, and checkpoint
-
-Never invent runtime-dependent results. Ask the student to run the notebook in Colab when execution is required, then inspect the actual outputs they provide before interpreting results or making subsequent data-dependent decisions.
-
-At each checkpoint verify that the relevant cells run, outputs are genuine, the assignment requirements for that stage are covered, and report-relevant observations are recorded.
+Any code change requires a fresh Colab run. After it, update the notebook's interpretation text and the report so every number matches the new outputs (timings change between runs).
 
 ---
 
-## 2. Priority order
+# 2. Priorities
 
-Always prioritize:
+1. `Assignment2.pdf` compliance
+2. Correctness and leakage control
+3. Fair, controlled GBDT-versus-MLP comparison
+4. Clear, defensible notebook
+5. Student understanding
+6. Report readiness
+7. Repository polish
 
-1. `Assignment2.pdf` compliance.
-2. Technical correctness and leakage prevention.
-3. Fair, controlled GBDT-versus-MLP experiments.
-4. A reproducible, high-quality submission notebook.
-5. Student understanding and ability to defend decisions.
-6. Report readiness and accurate interpretation.
-7. Repository organization and cosmetic polish.
-
-Do not optimize solely for the highest score. The handout explicitly states that neither model is required to win and there is no fixed minimum F1 or AP score for full credit. A defensible experiment and honest analysis are more important than manufacturing a favorable result.
-
-Do not add complex techniques, extensive searches, or extra models that are not needed for the assignment.
+Neither model is required to win and there is no minimum AP/F1. Do not add unrequested models or large searches.
 
 ---
 
-## 3. Dataset choice and dataset-specific guardrails
+# 3. Required pipeline
 
-**Chosen dataset: Bank Marketing.** Local file: `data/bank-additional-full.csv`. Do not switch to Home Credit or mix the two datasets.
+audit → cleaning → split → leakage-safe preprocessing → GBDT experiments → MLP experiments → validation-AP selection → one-time test evaluation → interpretation → report
 
-### Bank Marketing (active)
+---
 
-- Use `bank-additional-full.csv` (41,188 rows) from `bank-additional.zip`.
-- Repository path: `assignment2/data/bank-additional-full.csv` (flat `data/` folder; no `raw/` subdirectory).
-- Read the CSV with a semicolon separator (`sep=";"`).
-- Predict whether a client subscribes to a term deposit.
-- Treat `y = "yes"` as the positive class and encode the target consistently as 1; `"no"` is 0.
-- **Drop `duration` from predictors.** It is the completed call duration and is unavailable before the call, so including it would leak information unavailable at prediction time. Do not reintroduce it through derived features.
-- Inspect and explain how literal `unknown` category values are handled. They are dataset values, not automatically the same thing as a previously unseen category.
-- Explain how `pdays = 999` is handled. It means there was no previous contact; do not silently interpret it as 999 elapsed days, discard it, or replace it without preserving/explaining its meaning. A documented indicator plus a justified numeric representation is one possible strategy; other approaches are acceptable if reasoned and applied consistently.
-- A random split does not establish generalization to future campaigns. State this limitation in the report.
-- The handout treats this as a historical benchmark, not evidence of current banking performance.
-- Notebooks are written for **Google Colab submission**: expect `bank-additional-full.csv` in the notebook working directory via Colab Files → Upload. Do not hard-code this git repo’s paths (`assignment2/data/`, `../data`, GitHub raw URLs, etc.) inside `.ipynb` code. The student copies the `.ipynb` into Colab; the notebook must run there standalone.
+# 4. Dataset rules
 
-### Step 1 decisions (fixed; verified by running the notebook)
+Dataset: **UCI Bank Marketing**, `bank-additional-full.csv` (`sep=";"`). Home Credit is not used.
 
-Audit facts: 41,188 × 21; 10 numeric + 10 nominal + target; positive rate 11.27%; no NaNs; literal `"unknown"` in `default` (8,597), `education` (1,731), `housing`/`loan` (990), `job` (330), `marital` (80); `pdays = 999` in 39,673 rows (96.32%), real range 0–27; 12 exact duplicates.
+- Predict `y`; `"yes"` = 1 is the positive class
+- Drop `duration` (known only after the call: leakage)
+- Explain `pdays = 999` and literal `"unknown"` values
+- A random split does not test future campaigns; the data are a historical benchmark (2008–2010)
+
+---
+
+# 5. Known audit facts
+
+- 41,188 × 21; 10 numeric + 10 nominal predictors + target
+- Positive rate 11.27% (4,640 yes)
+- No NaNs; `"unknown"` in `default` 8,597, `education` 1,731, `housing`/`loan` 990, `job` 330, `marital` 80
+- `pdays = 999` in 39,673 rows (96.32%); real values 0–27; 4,110 of those rows have `previous > 0`
+- 12 exact duplicates (1,784 after dropping `duration`); `default = "yes"` in 3 rows
+
+State audit results honestly; do not fabricate problems.
+
+---
+
+# 6. Cleaning and preprocessing decisions
 
 | Item | Decision |
 |---|---|
-| Target | `y == "yes"` → 1; any other value (including NaN) raises `ValueError` |
+| Target | `y == "yes"` → 1; any other value raises an error |
 | `duration` | Dropped |
-| `pdays = 999` | `pdays_recorded` 0/1 flag (1 when a real day count exists); `pdays` → −1 when 999. Named `pdays_recorded`, not `previously_contacted`, because 4,110 rows with 999 have `previous > 0` (from Step 3 onward; Step 1–2 notebooks keep the old name, same values) |
-| `"unknown"` | Kept as its own category, one-hot encoded; its target signal is checked on training rows only (after the split) |
-| NaN | None; no imputer |
-| Duplicates | Kept (no ID; 12 rows) |
+| `pdays = 999` | `pdays_recorded` 0/1 flag; `pdays` → −1 when 999 |
+| `"unknown"` | Kept as its own category (informative on training rows: `default` unknown 5.3% vs 12.9% known) |
+| Duplicates / rare levels | Kept |
 | Split | Two-stage stratified 70/15/15, `random_state=42` → 28,831 / 6,178 / 6,179 rows |
-| Preprocessing | `ColumnTransformer` fit on train only: one-hot (`handle_unknown="ignore"`) for 10 categoricals; numeric passthrough for GBDT, `StandardScaler` for MLP; 63 encoded features for both |
-| Timing | `PREPROCESSING_TIME_SEC` recorded per model input, separately from fit time |
-
-Variables later steps rely on: `X_train_tree/X_valid_tree/X_test_tree`, `X_train_mlp/X_valid_mlp/X_test_mlp`, `y_train/y_valid/y_test`, `PREPROCESSING_TIME_SEC`, `RANDOM_STATE`.
-
-### Step 2 design (GBDT; verified in Colab after cap change)
-
-- Fixed: `tree_method="hist"`, `n_estimators=5000` cap, `early_stopping_rounds=50` and `eval_metric="logloss"` in the constructor, `eval_set=[train, validation]` (validation last), `random_state=42`, other params default.
-- Reference config: `learning_rate=0.1`, `max_depth=4`, `subsample=1.0`.
-- Phase A: `learning_rate` ∈ {0.01, 0.1, 0.3}. Phase B: `max_depth` ∈ {2, 4, 6, 8} at best lr. Phase C (regularization): `subsample` ∈ {1.0, 0.8, 0.6} at best lr + depth. 8 configurations total (reference shared).
-- Selection: highest validation AP (`average_precision_score` on `predict_proba[:, 1]`). Colab (source of truth) selected G7: lr 0.01, depth 4, subsample 0.8, AP 0.4923; AP range 0.4818–0.4923. Local macOS/XGBoost 2.1.4 picks a different path (lr 0.1 → G8) because phase-A AP gaps are ~0.002; notebook interpretation follows Colab.
-- Cap raised 3000 → 5000 after Colab showed depth 2 at lr 0.01 hitting the cap; `hit_cap` column flags any unconverged run (cap reached and best iteration within the last `early_stopping_rounds`). Config IDs are fixed per phase (G1–3, G4–6, G7–8; M1–3, M4–5, M6–8), and re-running a phase replaces its records/models instead of appending. Colab rerun: 0 runs at cap (G4 now stops at 3,136), selection unchanged (G7).
-- Colab runtime for the report: Python 3.13.18, pandas 2.2.3, numpy 2.4.6, scikit-learn 1.6.1, xgboost 3.4.1, matplotlib 3.10.0, Linux x86_64, 2 CPU cores.
-- Per-config `fit_sec` is noisy on Colab's shared 2 cores (G8 16.4 s vs G7 6.1 s with similar tree counts). Step 4 must re-time the selected GBDT and MLP with repeats on the same runtime instead of reusing these values.
-- Selection uses unrounded `valid_AP` from `gbdt_records` (not the 4-dp rounded `gbdt_results` table).
-- Importance: **total gain** share over trees `0..best_iteration` inclusive (`trees_to_dataframe`), top 15 — not average gain via `get_score("gain")`. Figures saved as `fig_gbdt_learning_rates.png`, `fig_gbdt_selected_logloss.png`, `fig_gbdt_feature_importance.png`.
-- Variables for later steps: `gbdt_selected`, `GBDT_SELECTED_ID`, `GBDT_FIT_TIME_SEC`, `gbdt_results`.
-
-### Step 3 design (MLP; verified in Colab)
-
-- Fixed: `MLPClassifier(solver="adam", activation="relu", max_iter=200, early_stopping=False, random_state=42)`, `batch_size="auto"`, `tol=1e-4`, `n_iter_no_change=10` (defaults) on `X_train_mlp` (scaled numerics + one-hot).
-- Reference config: `hidden_layer_sizes=(64,)`, `learning_rate_init=0.001`, `alpha=0.0001` (scikit-learn defaults for lr/alpha).
-- Phase A: `hidden_layer_sizes` ∈ {(64,), (128, 64), (128, 64, 32)}. Phase B: `learning_rate_init` ∈ {0.0001, 0.001, 0.01} at best architecture. Phase C (regularization): `alpha` ∈ {0.0001, 0.01, 0.1, 1.0} at best architecture + lr. 8 configurations total (matches GBDT).
-- `ConvergenceWarning`s are captured per run, printed with the config ID, and stored in `converged`; other warnings are re-emitted. `final_train_loss` (last `loss_curve_` value) includes the L2 penalty; `train_logloss`/`valid_logloss` are penalty-free and comparable with GBDT.
-- Selection: highest unrounded validation AP from `mlp_records`.
-- No per-epoch validation curve: `partial_fit` replay does not reproduce `fit` exactly, so the selected-model figure shows `loss_curve_` plus final train/validation log loss lines.
-- Colab (source of truth) selected M6: (64,), lr 0.0001, alpha 0.01, validation AP 0.4825; AP range 0.3180–0.4825. M1–M3 overfit at default lr/alpha (AP 0.410 / 0.318 / 0.350; validation log loss up to 1.13). 4 of 8 runs (M1, M2, M4, M5) hit the 200-epoch budget with `ConvergenceWarning`. Local macOS run matches except M3 (133 vs 150 epochs, AP 0.3448 vs 0.3505); selection path identical. Local runs also print spurious numpy/Accelerate `matmul` RuntimeWarnings (macOS BLAS artifact; absent on Colab).
-- Colab `fit_sec` 9–49 s per config (M6 14.2 s); noisy on shared cores, re-time in Step 4.
-- Figures: `fig_mlp_architectures.png`, `fig_mlp_learning_rates.png`, `fig_mlp_selected_loss.png`.
-- Variables for later steps: `mlp_selected`, `MLP_SELECTED_ID`, `MLP_FIT_TIME_SEC`, `mlp_results`.
-
-### Step 4 design (final comparison; verified in Colab)
-
-- Section 7 of `assign2-bank_step4.ipynb`. Selections are fixed from Sections 5.4/6.4 (validation AP); the test set is first used in 7.3.
-- Timing (7.2): `sklearn.base.clone` of each selected model refitted `TIMING_REPEATS = 3` times on the same runtime; report median/min/max fit time. GBDT refit uses `eval_set=[(X_valid_tree, y_valid)]` only (early stopping needs validation only; training-set monitoring was for plots). Asserts confirm each refit reproduces the selected model (same `best_iteration`, same validation probabilities). Preprocessing time = median of 3 `fit_transform_splits` runs per preprocessor (fit on train + transform train/valid/test), reported separately.
-- Test metrics (7.3): AP from `predict_proba[:, 1]`; accuracy/precision/recall/F1 for the positive class at threshold 0.5 (`proba >= 0.5`), `zero_division=0`; no threshold tuning. One comparison table (models as rows).
-- Figures: `fig_pr_curves.png` (both PR curves, test positive-class rate as dashed reference, 0.5-threshold markers) and `fig_confusion_matrices.png` (side by side). 7.6 prints the reproducibility/runtime summary (versions, platform, cores, CPU only, seed, split).
-- Colab (source of truth; G7 vs M6): test AP 0.4819 vs 0.4771; at 0.5, accuracy 0.9022 / 0.9003, precision 0.6917 / 0.6460, recall 0.2385 / 0.2543, F1 0.3547 / 0.3649, predicted positives 240 / 274 (696 actual of 6,179; rate 0.1126). Confusion (TN, FP, FN, TP): GBDT 5409, 74, 530, 166; MLP 5386, 97, 519, 177. Median fit (3 refits, 2-core CPU): 3.943 s (3.923–5.224) vs 13.329 s (13.304–13.418); preprocessing 0.083 / 0.081 s. Interpretation: ranking performance tied within noise; GBDT ~3.4× faster and far less tuning-sensitive.
-- Local macOS run differs only because local GBDT selects G8 (test AP 0.4802); MLP numbers identical.
-
-### Home Credit Default Risk (not used)
-
-Kept only so the handout alternative remains documented. Do not download, sample, or implement this path unless the student explicitly changes the dataset choice.
-
-- Would use `application_train.csv` only; drop `SK_ID_CURR`; separate `TARGET`; take one 30,000-row TARGET-stratified sample with `random_state=42` before splitting.
-
-### Dataset-neutral rule
-
-Use only the permitted Bank Marketing source file, document the source and the actual shape, and never change the dataset or sample silently after experiments begin.
+| Encoding | `ColumnTransformer` fitted on train only; one-hot with `handle_unknown="ignore"`; 63 features for both models |
+| Scaling | `StandardScaler` (train only) for the MLP; numeric passthrough for GBDT |
 
 ---
 
-## 4. Step 1 — Data preparation
+# 7. Leakage and test-set isolation
 
-The handout requires the following:
+For any fit that learns from data (encoding, scaling):
 
-### 4.1 Initial data audit
+1. Split first
+2. Fit on training data only
+3. Transform validation and test with that fit
 
-Report:
-
-- number of rows and columns;
-- feature types (numeric, nominal categorical, and any other relevant types);
-- positive-class proportion;
-- missing values and meaningful special/sentinel values;
-- cleaning decisions and their justifications.
-
-Inspect the actual chosen dataset. Do not assume missingness, category names, invalid values, or class balance before checking the data.
-
-### 4.2 Train/validation/test split
-
-Create a stratified **70/15/15 train/validation/test split** with `random_state = 42`.
-
-For Home Credit, perform the required stratified 30,000-row sample first, then create this split. The selected sample and split rows must remain identical across all GBDT and MLP experiments.
-
-Use the validation set for model selection and early-stopping decisions as specified. Keep the test set untouched until both final configurations and all analytical choices are fixed.
-
-### 4.3 Leakage-safe preprocessing
-
-- Fit every learned preprocessing operation on training data only.
-- Apply the already-fitted transformations to validation and test data.
-- Use one-hot encoding for nominal categorical features.
-- Handle categories not observed during training safely, e.g. with an encoder configured to ignore unseen categories; separately explain literal `unknown` values present in Bank Marketing.
-- Handle missing values with a justified strategy fitted on training data only.
-- Scale numeric features for the MLP. Scaling is optional for trees.
-- Keep the same underlying input information and the exact same split rows for both models. Model-specific transformations such as numeric scaling are acceptable and should be explained; do not give one model extra target information or different source rows.
-- Keep the target out of the predictors.
-
-Prefer `ColumnTransformer` and `Pipeline` where practical. If transformations are performed outside a pipeline for XGBoost early stopping, fit them only on training data and apply the same fitted transformer to the training, validation, and test partitions.
-
-Be able to explain the distinction between `fit` / `fit_transform` on training data and `transform` on validation/test data.
+The test set is not used for early stopping, tuning, or selection, and its labels are not inspected before Section 7 (the split summary shows test row count only). Be able to explain `fit_transform(X_train)` vs `transform(X_test)`.
 
 ---
 
-## 5. Step 2 — Gradient Boosted Decision Trees (GBDT)
+# 8. Model experiments
 
-The required estimator is `xgboost.XGBClassifier` with `tree_method="hist"`.
+**GBDT:** `XGBClassifier(tree_method="hist", n_estimators=5000, early_stopping_rounds=50, eval_metric="logloss", random_state=42, device="cpu")`; `eval_set=[train, validation]` with validation last. Phases: A `learning_rate` {0.01, 0.1, 0.3}; B `max_depth` {2, 4, 6, 8}; C `subsample` {1.0, 0.8, 0.6}. 8 configurations (G1–G8). The cap was raised from 3,000 after the depth-2 run hit it; no run reaches 5,000. Importance = total-gain share over trees `0..best_iteration`.
 
-### Required controlled experiments
+**MLP:** `MLPClassifier(solver="adam", activation="relu", max_iter=200, early_stopping=False, random_state=42)` on scaled inputs. Phases: A `hidden_layer_sizes` {(64,), (128, 64), (128, 64, 32)}; B `learning_rate_init` {1e-4, 1e-3, 1e-2}; C `alpha` {1e-4, 1e-2, 1e-1, 1.0}. 8 configurations (M1–M8). `ConvergenceWarning`s captured per run, not silenced. `loss_curve_` includes the L2 penalty; train/validation log loss in tables are penalty-free, so the selected-model figure plots `loss_curve_` alone as the training objective.
 
-- Use binary log loss (`logloss`) to monitor training and validation performance.
-- Compare at least three `learning_rate` values (examples in the handout: `0.01`, `0.1`, `0.3`) while holding other settings fixed.
-- Then vary `max_depth` and **one** regularization control: `subsample`, `reg_alpha`, or `reg_lambda`.
-- Aim for roughly 6–10 total configurations for this model. A full Cartesian grid is not required. Keep search effort comparable to the MLP experiments.
-- Record every configuration tried and its validation score. Do not omit failed, interrupted, or warning-producing runs if they are part of the actual experiment history; describe them accurately.
-
-### Early stopping requirements
-
-- Set a reasonable upper limit on `n_estimators`.
-- Use validation-based early stopping.
-- Put `early_stopping_rounds` and `eval_metric` in the `XGBClassifier` constructor, as specified by the handout.
-- Pass transformed training and validation data to `fit()` through `eval_set`.
-- Put the validation set **last** in `eval_set` so it controls early stopping.
-- Never use the test set as an early-stopping set or in hyperparameter selection.
-- Record the best iteration / stopping behavior and distinguish the early-stopping monitor (`logloss`) from the primary cross-configuration selection metric (`validation AP`).
-
-### Required GBDT outputs
-
-- training-versus-validation log-loss plot for the selected model;
-- feature-importance plot for the selected model;
-- table of tried settings and validation scores;
-- explicit statement of the feature-importance measure used (for example, gain);
-- explanation of how learning rate, depth/tree complexity, and the selected regularization control affected convergence or overfitting.
-
-Feature importance is an association-based model explanation, not a causal claim. Report transformed feature names clearly if one-hot encoding is used.
+Each phase changes one setting and carries forward the best value; selection uses unrounded validation AP.
 
 ---
 
-## 6. Step 3 — Multi-Layer Perceptron (MLP)
+# 9. Evaluation
 
-Use `sklearn.neural_network.MLPClassifier` with `solver="adam"`.
+| Item | Rule |
+|---|---|
+| Selection metric | Validation AP from `predict_proba[:, 1]` with `average_precision_score` |
+| Test metrics | AP; accuracy, precision, recall, F1 for the positive class at threshold 0.5 (not tuned) |
+| Figures | Both PR curves with the test positive-class rate as reference; both confusion matrices |
+| Timing | Selected models refitted 3× on the same Colab CPU runtime (median, min, max); every refit verified to reproduce the selected model; preprocessing timed separately |
+| Environment | Versions, platform, CPU model, cores, seed recorded in the notebook |
 
-### Required controlled experiments
-
-- Compare at least three `hidden_layer_sizes` settings (examples in the handout: `(64,)`, `(128, 64)`, `(128, 64, 32)`) while holding other settings fixed.
-- Then vary `learning_rate_init` and **one** of `activation` or `alpha` (L2 regularization).
-- Aim for roughly 6–10 total configurations. Record every configuration tried and keep the search effort comparable to GBDT.
-- Use `max_iter` as a fixed/documented training budget across comparable configurations where possible.
-- Capture and report convergence warnings. Do not hide or silently suppress them.
-- For the simple comparison recommended in the handout, use `early_stopping=False`.
-
-If built-in MLP early stopping is enabled instead:
-
-- explain that scikit-learn reserves an internal validation subset from the training data;
-- document the choice and its implications for the effective training subset;
-- continue using the shared external validation set for final model selection;
-- do not replace or tune against the external test set.
-
-### Required MLP outputs
-
-- selected model's training-loss curve from `loss_curve_`;
-- plot or table of validation performance versus architecture;
-- record of configurations and validation scores;
-- explanation of how width/depth, learning rate, and the varied regularization/activation choice affected results;
-- discussion of convergence warnings and the chosen `max_iter` budget.
-
-Numeric scaling must be fitted on training data only. Do not use unscaled numerical features for MLP merely to make its code match the tree pipeline.
+Figures used in the PDF must be embedded in the PDF; graders will not open the notebook to find graphs.
 
 ---
 
-## 7. Experiment budget and fair comparison
+# 10. Final results (Colab run in the submitted notebook)
 
-The handout recommends approximately **6–10 configurations per model**. Experiments may share a configuration where sensible; a full Cartesian product is unnecessary.
+- Selected: **G7** (lr 0.01, depth 4, subsample 0.8, 863 trees; validation AP 0.4923) and **M6** ((64,), lr 1e-4, alpha 0.01, 135 epochs; validation AP 0.4825)
+- Test (6,179 rows, 696 positives, rate 0.1126), GBDT vs MLP: AP 0.4819 / 0.4771; accuracy 0.9022 / 0.9003; precision 0.6917 / 0.6460; recall 0.2385 / 0.2543; F1 0.3547 / 0.3649
+- Median fit time: 9.994 s (7.278–10.046) vs 27.818 s (27.631–27.993), GBDT about 2.8× faster; preprocessing 0.141 / 0.146 s
+- Runtime: Python 3.13.18, pandas 2.2.3, NumPy 2.4.6, scikit-learn 1.6.1, XGBoost 3.4.1, matplotlib 3.10.0; Linux x86_64, Intel Xeon 2.20 GHz, 2 cores, CPU only
 
-- Keep the search effort broadly comparable across GBDT and MLP.
-- Use controlled comparisons: change the parameter being studied while keeping other settings fixed for that comparison.
-- Record every tried configuration and its validation AP; include relevant convergence/early-stopping information.
-- Use the same training and validation rows for every configuration and both model families.
-- Use the same target definition and underlying predictor information.
-- Fix and document random seeds.
-- Avoid searching against the test set or selecting settings after looking at test metrics.
-
-Do not claim a controlled experiment if several parameters changed at once. Explain when a configuration is an exploratory follow-up rather than a one-variable comparison.
+Local macOS runs differ slightly (GBDT selects G8; spurious `matmul` warnings); report only Colab numbers.
 
 ---
 
-## 8. Step 4 — Model evaluation and comparison
+# 11. Notebook writing style
 
-### 8.1 Primary model-selection metric
+Pattern for analysis sections:
 
-The primary metric is **validation Average Precision (AP)** for the positive class.
+1. Markdown: what and why
+2. Code: implement
+3. Output: real result
+4. Markdown: interpret
 
-- Use positive-class probabilities, e.g. `predict_proba(X_valid)[:, 1]`.
-- Compute AP with `sklearn.metrics.average_precision_score`.
-- Do not compute AP from thresholded labels.
-- Do not substitute trapezoidal area under the precision-recall curve for average precision.
-- Choose one final configuration per model using validation AP.
-- Keep the test set untouched until both configurations and analysis decisions are fixed.
+Prefer small logical cells. Comments explain intent, assumptions, or risks — not restating obvious code.
 
-For XGBoost, early stopping is monitored by validation logloss as required, while the choice among experiment configurations is based on validation AP. Explain this distinction.
-
-### 8.2 Final test evaluation
-
-After choices are fixed, evaluate the selected fitted GBDT and MLP once on the test set.
-
-Report for the positive class:
-
-- Accuracy;
-- Precision;
-- Recall;
-- F1;
-- Average Precision (AP).
-
-Use a classification threshold of **0.5** for Accuracy, Precision, Recall, and F1. AP uses probabilities and is threshold-independent. If any additional threshold is tuned, select it using validation data only and clearly label it as an additional analysis; preserve the required 0.5-threshold results.
-
-Include:
-
-- both models' precision-recall curves;
-- the test set's positive-class proportion as the PR-curve reference level;
-- confusion matrices for both models;
-- a side-by-side final comparison table.
-
-### 8.3 Runtime and environment comparison
-
-- Measure final-model fit time on the same machine/runtime and report preprocessing time separately.
-- Use the same hardware/runtime for both fit-time measurements.
-- Do not compare a CPU run with a GPU run as if hardware were identical.
-- Record hardware/runtime details, package versions, and random seeds.
-- Keep preprocessing time distinct from model fitting time; state clearly what each timing includes.
-
-### 8.4 Interpretation
-
-Discuss:
-
-- when GBDT may be preferred over MLP and vice versa for tabular data;
-- sensitivity to learning rate, tree complexity, architecture, scaling, and regularization;
-- predictive performance versus training behavior and fit time;
-- how missing values and categorical features were handled;
-- bias/variance and generalization limitations;
-- the limits of feature importance (association, not causation).
-
-The handout explicitly permits either model to perform better. Do not force a winner or imply that a higher score alone proves a better general model.
+Avoid submission-noise: "checkpoint", "current scope", "notebook goal", step-handoff notes, and grader checklists.
 
 ---
 
-## 9. Step 5 — PDF report guardrails
+# 12. Report
 
-The report must be **5–7 pages including figures and references** and submitted on Gradescope.
+PDF: **5–7 pages** including figures and references; no code in body or appendix.
 
-Include a page map showing where Steps 1–5 are covered. A clear structure is:
+Page 1: title block, Colab notebook line, page map for Steps 1–5, summary.
 
-1. Introduction — task, target/positive class, dataset, data source.
-2. Methods — sample/split, cleaning, preprocessing, model setup, controlled tuning experiments.
-3. Results — experiment tables, selected model metrics, PR curves, confusion matrices, loss curves, feature importance, and training/preprocessing time.
-4. Discussion — GBDT versus MLP, learning behavior, bias/variance, interpretability, limitations.
-5. AI Tool Disclosure — tools, their roles, and what the student personally checked, changed, ran, and interpreted.
+Structure:
 
-Report requirements:
+1. Introduction
+2. Methods
+3. Results
+4. Discussion (bias/variance, when to prefer each model, sensitivity to tuning and scaling, categorical/missing handling, importance as association only, limitations)
+5. AI Tool Usage Disclosure
+6. References
 
-- Embed every required graph and table directly in the PDF. The grader will not open the notebook to locate missing figures.
-- Use readable axes, labels, legends, captions, and tables. Do not shrink figures excessively to fit more experiments.
-- Keep code out of the report, including appendices.
-- Include references for the dataset and relevant external documentation.
-- Put the Colab notebook link at the **very end** of the PDF.
-- Verify the Colab Viewer permission using a Columbia LionMail account before submission.
-
-Figures/tables should be generated from actual notebook outputs. Do not manually type results that differ from the notebook.
+The Colab link must be at the very end, shared so any Columbia LionMail account can open it as Viewer (10-point deduction otherwise). Embed all required figures; do not shrink them to fit more experiments.
 
 ---
 
-## 10. AI usage disclosure
+# 13. Rubric weights
 
-AI tools are explicitly permitted, but the final report must transparently disclose:
-
-- the tools used;
-- what each tool contributed;
-- what the student checked, changed, executed, validated, and interpreted personally.
-
-Do not claim AI-generated code was independently authored. Do not understate AI assistance or invent contributions. Make sure the disclosure matches the actual workflow (for example, ChatGPT, Cursor, and any other tool actually used).
-
-The student should be able to explain the implementation, including preprocessing, leakage prevention, XGBoost early stopping, learning-rate effects, MLP scaling/architecture, convergence warnings, AP, and the final comparison.
+- Data Preparation — 15%
+- GBDT Implementation — 15%
+- MLP Implementation — 15%
+- GBDT vs. MLP Comparison — 25%
+- Evaluation & Visualization — 20%
+- AI Tool Usage Disclosure — 10%
 
 ---
 
-## 11. Notebook organization and technical style
+# 14. AI disclosure
 
-Build step notebooks incrementally under `final/` and `learning/`. Each step notebook should include the prior verified pipeline plus the new step’s work, so it remains runnable top-to-bottom.
+AI use is allowed and must be disclosed in the report.
 
-Typical section order across the full assignment:
+Tools used on this work have included ChatGPT, Cursor, and CodeRabbit. Disclosure must accurately separate what AI did from what the student did (direction, review, Colab runs, decisions, ownership of correctness).
 
-1. Title, objective, dataset/source, and reproducibility notes.
-2. Environment/setup and imports.
-3. Data loading instructions and initial audit.
-4. Target definition and leakage exclusions (`duration`, `pdays=999`, `unknown`).
-5. Stratified 70/15/15 split.
-6. Preprocessing fitted on training data only.
-7. GBDT controlled experiments and selected-model diagnostics.
-8. MLP controlled experiments and selected-model diagnostics.
-9. Validation-based model selection.
-10. One-time final test evaluation and runtime comparison.
-11. Interpretation, limitations, and report-ready findings.
-
-Follow this cell pattern where useful:
-
-- Markdown: what is being done and why.
-- Code: implement one logical unit.
-- Output: show actual results.
-- Markdown: interpret what the results support and what they do not support.
-
-In the **learning** notebook, additionally use blockquotes for learning notes, TODOs, self-check questions, and report prompts.
-
-Avoid giant monolithic cells. Comments should explain intent, non-obvious assumptions, and risks rather than restating obvious syntax.
-
-Include clear instructions for locating/uploading the data in Colab. Do not assume a local filesystem path is available in Colab. Keep raw data out of the notebook itself.
-
-At the start or end, include a reproducibility/environment summary with at least Python, pandas, NumPy, scikit-learn, XGBoost, and relevant plotting-library versions, random seeds, and runtime/hardware information.
+Do not claim AI-written code or text was independently authored by the student.
 
 ---
 
-## 12. What Cursor must not do
+# 15. Change protocol
 
-Do not:
+When asked to continue or edit:
 
-- silently choose or switch the dataset;
-- use both datasets in one experiment;
-- use the Bank Marketing `duration` predictor or a derivative of it;
-- ignore the meaning of `pdays = 999`;
-- forget the required Home Credit 30,000-row stratified sample or perform it after the train/validation/test split;
-- use Home Credit tables beyond `application_train.csv`;
-- keep `SK_ID_CURR` as a predictor;
-- alter the selected sample or split rows between experiments;
-- fit imputation, encoding, scaling, or other learned preprocessing on validation/test data;
-- scale only one model's features in a way that changes the underlying input information;
-- omit either model family or replace either required estimator with another model;
-- omit any required controlled hyperparameter comparison;
-- exceed the intended experiment budget without a reason;
-- put XGBoost `early_stopping_rounds` or `eval_metric` only in `fit()` instead of the classifier constructor;
-- place validation before training in the XGBoost `eval_set` ordering (validation must be last);
-- use the test set for early stopping, tuning, or model selection;
-- choose final models using test AP;
-- compute AP from thresholded labels or trapezoidal PR area;
-- omit the test-prevalence reference level from the PR plot;
-- hide MLP convergence warnings;
-- report training time and preprocessing time as if they were the same measurement;
-- compare timings from different hardware as if comparable;
-- fabricate or hand-edit results that do not match notebook outputs;
-- claim feature importance proves causality;
-- assume one model must win or a minimum score is required;
-- omit required graphs/tables from the PDF;
-- put code in the PDF;
-- omit AI disclosure;
-- omit the Colab link at the end of the PDF or fail to verify LionMail Viewer access;
-- silently contradict `Assignment2.pdf`.
+1. **Inspect** the current notebook, `Assignment2.pdf`, and real Colab outputs.
+2. **Explain** the change in chat.
+3. **Edit** `/notebook/assign2-ms7556.ipynb` with the smallest sufficient change.
+4. **Verify** with a real Colab run. Never invent outputs.
+5. **Sync** the notebook text and the report to the new outputs, then confirm the assignment requirements are still met.
 
 ---
 
-## 13. Definition of done
+# 16. Do not
 
-The Assignment 2 work is ready only when:
-
-### Data preparation
-
-- one permitted dataset is selected and its source documented;
-- the actual dataset audit reports size, feature types, positive-class proportion, missing values, and special values;
-- dataset-specific rules are followed (Bank `duration` exclusion and `pdays=999` explanation, or Home Credit 30,000-row stratified sample and identifier/target exclusions);
-- a stratified 70/15/15 split with `random_state=42` is created and reused;
-- all learned preprocessing is fitted on training data only;
-- nominal categoricals are one-hot encoded;
-- MLP numeric features are scaled;
-- both models use the same rows and underlying input information.
-
-### GBDT
-
-- `XGBClassifier(tree_method="hist")` is trained;
-- logloss is monitored on training and validation data;
-- at least three learning rates are compared with other settings held fixed;
-- max depth and one regularization control are varied;
-- roughly 6–10 configurations are recorded;
-- early stopping is configured in the estimator constructor and validation is last in `eval_set`;
-- training/validation log-loss and feature-importance plots are present;
-- the importance measure is named and results are interpreted.
-
-### MLP
-
-- `MLPClassifier(solver="adam")` is trained on scaled numeric inputs;
-- at least three architectures are compared with other settings held fixed;
-- learning rate and one of activation/alpha are varied;
-- roughly 6–10 configurations are recorded;
-- max iteration budget and convergence warnings are reported;
-- early-stopping choice is documented;
-- selected-model `loss_curve_` and validation-performance-by-architecture output are present.
-
-### Evaluation and report
-
-- final configurations are selected by validation AP;
-- test set remains untouched until choices are fixed and is evaluated only for final reporting;
-- AP uses positive-class probabilities with `average_precision_score`;
-- classification metrics use threshold 0.5;
-- both PR curves, test positive-class reference level, confusion matrices, and a comparison table are present;
-- final fit time and preprocessing time are separately measured on the same runtime;
-- hardware, package versions, and random seeds are recorded;
-- the PDF is 5–7 pages, contains a page map for Steps 1–5, embeds required figures/tables, includes references and AI disclosure, and contains no code;
-- Colab link is at the very end and LionMail Viewer access is verified;
-- the notebook runs top-to-bottom and all reported results match its real outputs.
+- Use `duration` or anything derived from it
+- Switch or mix datasets
+- Fit preprocessing on validation/test rows, or use different splits per model
+- Use the test set for early stopping, tuning, or selection, or inspect test labels before final evaluation
+- Put `early_stopping_rounds` / `eval_metric` only in `fit()`, or place validation before training in `eval_set`
+- Compute AP from thresholded labels or trapezoidal PR area
+- Hide MLP convergence warnings
+- Compare timings across different hardware, or merge fit and preprocessing time
+- Claim feature importance is causal
+- Invent results or report numbers that differ from the notebook
+- Put code in the PDF or omit the AI disclosure or Colab link
+- Contradict `Assignment2.pdf`
 
 ---
 
-## 14. Change protocol
+# 17. Done when
 
-When asked to continue or edit a step:
+**Notebook**
 
-1. **Inspect** the current final + learning notebooks, `Assignment2.pdf`, `AGENTS.md`, and any real execution outputs the student provides.
-2. **Explain** the planned change in chat before substantial notebook edits.
-3. **Edit** `/notebook/final/assign2-bank_step<N>.ipynb` with the smallest sufficient change. Preserve working, verified sections.
-4. **Mirror** the same implementation into `/notebook/learning/assign2-bank_step<N>.ipynb`, adding or updating learning notes, TODOs, self-check questions, and report prompts.
-5. **Verify** with real runs (student Colab or local). Never invent outputs.
-6. **Confirm** the change still meets the relevant assignment requirements before moving on.
-7. **Record** durable decisions that should persist across sessions (dataset choice, cleaning rules, selected hyperparameters, seeds) back into `AGENTS.md` or the notebook Markdown when they become fixed.
+- Runs top-to-bottom in Colab with outputs saved
+- Audit, cleaning, split, and preprocessing match `Assignment2.pdf`; no leakage
+- 8 controlled configurations per model; early stopping and convergence reported
+- Selection by validation AP; test used once; required metrics and figures present
+- Timing, environment, and seed recorded; interpretations match outputs
 
-Suggested step notebooks (Assignment 1 style):
+**Report**
 
-| Step | Focus | Notebooks |
-|---|---|---|
-| 0 | Scaffold: setup + Colab data upload + initial load (kept for history) | `assign2-bank_step0.ipynb` |
-| 1 | Audit, clean, 70/15/15 split, leakage-safe preprocessing | `assign2-bank_step1.ipynb` in `final/` and `learning/` |
-| 2 | GBDT controlled experiments + selected-model diagnostics | `assign2-bank_step2.ipynb` |
-| 3 | MLP controlled experiments + selected-model diagnostics | `assign2-bank_step3.ipynb` |
-| 4 | Validation AP selection, one-time test eval, timing/PR/confusion | `assign2-bank_step4.ipynb` |
-| Final | Consolidated Colab submission notebook | `final/assign2-ms7556.ipynb` |
-| Report | 5–7 page PDF + LionMail Viewer verification | `report/Assignment2_Report.pdf` |
-
-Dataset download into `data/` is done (Bank Marketing). Do not start report writing before the notebook’s final figures and tables exist. Do not inspect the test set for model selection.
+- 5–7 pages, page map for Steps 1–5, embedded figures and tables, no code
+- Discussion covers the Step 4f points and limitations; references and AI disclosure included
+- Numbers match the notebook; Colab link at the end with LionMail Viewer access verified
 
 ---
 
-## 15. Final principle
+# 18. Tie-break
 
-The objective is not simply to execute two classifiers. It is to produce a technically correct, reproducible, controlled comparison of gradient-boosted trees and an MLP on one permitted tabular dataset, understand how their learning behavior and preprocessing differ, evaluate them without test leakage, and communicate the evidence accurately.
-
-When in doubt:
-
-**`Assignment2.pdf` → correctness and leakage control → fair experiments → notebook reproducibility → student understanding → report quality → repository polish.**
+**`Assignment2.pdf` > correctness and leakage control > fair comparison > clear notebook > report readiness > repo polish.**
