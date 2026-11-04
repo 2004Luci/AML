@@ -1,33 +1,18 @@
 ---
-description: Assignment 2 workflow and GBDT-versus-MLP notebook guardrails
+description: Assignment 2 workflow and notebook-first guardrails
 alwaysApply: true
 ---
 
-Follow `AGENTS.md` for the full Assignment 2 guardrails. `Assignment2.pdf` is the authoritative specification.
+Follow `AGENTS.md` for Assignment 2 guardrails.
 
-Maintain two notebook tracks (same dual-track workflow as Assignment 1):
+For every meaningful change:
 
-- Final / submission: `/notebook/final/assign2-bank_step<N>.ipynb`
-- Learning: `/notebook/learning/assign2-bank_step<N>.ipynb`
-- Consolidated Colab deliverable (when all steps are done): `/notebook/final/assign2-ms7556.ipynb`
+1. Explain in chat (what, why, alternatives, risks, assignment fit, report impact).
+2. Update the submission notebook under `/notebook/` (`assign2-ms7556.ipynb`).
+3. Re-run in Colab and sync the notebook text and report to the new outputs.
 
-For every meaningful step:
+The `.ipynb` is the technical deliverable. `Assignment2.pdf` is the authoritative spec.
 
-1. Explain in chat what is changing, why, relevant alternatives/risks, how it satisfies the assignment, and what should be discussed in the report.
-2. Update the final/submission notebook for that step. Keep it runnable, reproducible, and submission-ready (no checkpoint/process meta notes aimed at graders).
-3. Mirror the same correct implementation into the learning notebook, adding learning notes, TODOs, self-check questions, and report prompts.
-4. Validate with real execution outputs. Never invent results or claim cells were run when they were not.
+Never invent results. Never use `duration`, fit preprocessing outside the training rows, or touch the test set before both models are selected by validation AP. Prefer small, justified notebook edits; keep the notebook submission-ready (no checkpoint/meta clutter). Verify with real outputs.
 
-Core assignment constraints:
-
-- Dataset is fixed: Bank Marketing. Local repo copy may live under `data/` for convenience, but **notebook code must be Colab-standalone**: load `bank-additional-full.csv` from the working directory after Files → Upload. Do not hard-code this git repo’s paths or GitHub URLs in `.ipynb` cells.
-- Read with `sep=";"`, drop `duration`, and explain `pdays = 999` and literal `unknown` categories. Do not switch to Home Credit or mix datasets.
-- Reuse one stratified 70/15/15 train/validation/test split with `random_state=42` for every experiment. Fit learned preprocessing on training data only. One-hot encode nominal categories; scale numeric features for MLP. Keep the same split rows and underlying input information for both models.
-- GBDT: `xgboost.XGBClassifier(tree_method="hist")`; monitor train/validation `logloss`; compare at least three learning rates, then vary `max_depth` and one regularization control; use roughly 6–10 configurations. Put `early_stopping_rounds` and `eval_metric` in the estimator constructor. Pass transformed train and validation data through `eval_set`, with validation last. Include loss curves, feature importance, and a tried-configurations table.
-- MLP: `MLPClassifier(solver="adam")`; compare at least three architectures, then vary `learning_rate_init` and one of `activation` or `alpha`; use roughly 6–10 configurations. Fix/document `max_iter`, capture convergence warnings, and normally use `early_stopping=False`. Include `loss_curve_` and validation performance by architecture.
-- Choose one final configuration per model using validation AP. Compute AP from positive-class probabilities with `average_precision_score`, never thresholded labels or trapezoidal PR area. Do not inspect/use the test set for tuning. After choices are fixed, report test Accuracy, Precision, Recall, F1 at threshold 0.5 and AP from probabilities.
-- Include both PR curves with the test positive-class proportion as reference, confusion matrices, a side-by-side comparison table, final fit times and separate preprocessing times measured on the same runtime, hardware/package versions, and seeds.
-- The PDF report must be 5–7 pages including figures and references, include a page map for Steps 1–5, contain no code, and embed all required figures/tables. Put the Colab link at the very end and verify Columbia LionMail Viewer access.
-- Disclose AI tools accurately and explain the student's own checks and contributions.
-
-Do not optimize for a leaderboard or force either model to win. The handout has no minimum F1/AP score for full credit. See `AGENTS.md` for the complete rubric, report checklist, dataset-specific safeguards, notebook style, and definition of done.
+Details on experiments, metrics, leakage, decisions, final results, report rules, and rubric are in `AGENTS.md`.

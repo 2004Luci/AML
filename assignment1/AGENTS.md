@@ -287,4 +287,4 @@ When asked to continue or edit:
 
 # 18. Tie-break
 
-**`Assignment1.pdf` > correctness > clear notebook > student understanding > report readiness > repo polish.**
+**`Assignment1.pdf` > correctness > clear notebook > report readiness > repo polish.**
