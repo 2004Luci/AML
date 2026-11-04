@@ -200,7 +200,7 @@ def build_story(pages):
         "1e-4, L2 alpha 0.01, 135 epochs; validation AP 0.4825).",
         "<b>Test set</b> (6,179 rows, used once): AP 0.4819 (GBDT) vs. 0.4771 (MLP), against a no-skill baseline of 0.113. "
         "The two models are effectively tied; at the 0.5 threshold both are conservative (recall 0.24 vs. 0.25).",
-        "<b>Cost and robustness.</b> GBDT fits about 3.4\u00d7 faster (3.9 s vs. 13.3 s median, same 2-core Colab CPU) and was "
+        "<b>Cost and robustness.</b> GBDT fits about 2.8\u00d7 faster (10.0 s vs. 27.8 s median, same 2-core Colab CPU) and was "
         "stable across all eight configurations (validation AP 0.482\u20130.492). The MLP ranged from 0.318 to 0.483 and "
         "overfitted badly at default settings until the learning rate was reduced and L2 regularization added.",
     ])
@@ -257,7 +257,8 @@ def build_story(pages):
     s.append(Heading("2.2 Split and preprocessing (Steps 1b\u20131d)", h2, "m2"))
     s.append(P(
         "A two-stage stratified split (random_state = 42) produced <b>train 28,831 / validation 6,178 / test 6,179</b> rows "
-        "(70/15/15) with 3,248 / 696 / 696 positives, so every split keeps the 11.3% positive rate. Preprocessing is a "
+        "(70/15/15), with 3,248 and 696 positives in train and validation (11.3% each); test labels stay unread until the "
+        "final evaluation (Section 3.3). Preprocessing is a "
         "column transformer fitted on training rows only: a one-hot encoder (categories unseen in training are ignored) "
         "expands the 10 nominal columns to 53 indicators, and the 10 numeric columns (including <i>pdays_recorded</i>) pass through, giving "
         "<b>63 features for both models</b>. The only difference is that the MLP's numeric columns are standardized with a "
@@ -301,7 +302,7 @@ def build_story(pages):
         "Each family's final configuration is the one with the highest validation AP (computed from predicted "
         "probabilities, unrounded). The test set is then scored once. AP is threshold-free; accuracy, precision, recall "
         "and F1 for the positive class use the default 0.5 probability threshold, which was deliberately not tuned. For "
-        "timing, each selected configuration is refitted three times on the same Colab runtime (Linux x86_64, 2 CPU cores, "
+        "timing, each selected configuration is refitted three times on the same Colab runtime (Linux x86_64, Intel Xeon 2.20 GHz, 2 CPU cores, "
         "no GPU; Python 3.13.18, pandas 2.2.3, NumPy 2.4.6, scikit-learn 1.6.1, XGBoost 3.4.1, matplotlib 3.10.0; "
         "seed 42) and the median is reported. Every refit is checked to reproduce the selected model, and preprocessing "
         "time (fit on train, then transform all splits) is measured separately."
@@ -403,8 +404,8 @@ def build_story(pages):
             ["Recall (positive class)", "0.2385", "0.2543"],
             ["F1 (positive class)", "0.3547", "0.3649"],
             ["Predicted positives / true positives found", "240 / 166", "274 / 177"],
-            ["Training time, median (range)", "3.943 s (3.923\u20135.224)", "13.329 s (13.304\u201313.418)"],
-            ["Preprocessing time (median)", "0.083 s", "0.081 s"],
+            ["Training time, median (range)", "9.994 s (7.278\u201310.046)", "27.818 s (27.631\u201327.993)"],
+            ["Preprocessing time (median)", "0.141 s", "0.146 s"],
         ], [2.7 * inch, 1.9 * inch, 1.9 * inch], bold_first_col=True),
     ))
     s.append(P(
@@ -414,7 +415,7 @@ def build_story(pages):
         "models are conservative, flagging only 240\u2013274 calls and finding about a quarter of subscribers (Figure 5). "
         "The MLP trades a little precision for a little recall, which gives it a marginally higher F1. Accuracy (about 0.90) "
         "is only 1.3\u20131.5 points above always predicting \u201cno\u201d (0.887), so it is not informative here. In cost, GBDT trains "
-        "<b>about 3.4\u00d7 faster</b> on identical hardware, and preprocessing is negligible for both (about 0.08 s)."
+        "<b>about 2.8\u00d7 faster</b> on identical hardware, and preprocessing is negligible for both (about 0.14 s)."
     ))
     s.append(figure("fig_pr_curves.png", 4.9,
                     "Figure 4. Test-set precision\u2013recall curves with AP in the legend; dots mark the 0.5 threshold and "
@@ -437,7 +438,7 @@ def build_story(pages):
     s.append(P("4.2 When to prefer each model; sensitivity to tuning and scaling", h2))
     s.append(P(
         "On medium-sized tabular data with mixed types, <b>GBDT is the better default</b>. It matched or beat the MLP, "
-        "trained 3.4\u00d7 faster, needed no scaling, and its eight configurations all landed within about 0.01 AP of each other (0.482\u20130.492). "
+        "trained 2.8\u00d7 faster, needed no scaling, and its eight configurations all landed within about 0.01 AP of each other (0.482\u20130.492). "
         "That robustness means a reasonable model is obtained with little tuning. The MLP was <b>highly sensitive to "
         "hyperparameters</b> (validation AP ranged from 0.32 to 0.48) and depends on feature scaling: unscaled inputs such "
         "as nr.employed (\u2248 5,000) would dominate the gradients of binary indicators, whereas trees are invariant to "
