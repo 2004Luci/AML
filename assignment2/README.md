@@ -15,7 +15,7 @@ The assignment focuses on controlled experiments, predictive performance, learni
 - [x] Step 2 GBDT experiments implemented (`assign2-bank_step2.ipynb`, 8 configurations); verified in Colab
 - [x] Step 3 MLP experiments implemented (`assign2-bank_step3.ipynb`, 8 configurations); verified in Colab
 - [x] Step 4 final comparison implemented (`assign2-bank_step4.ipynb`: one-time test evaluation, PR curves, confusion matrices, timing); verified in Colab
-- [ ] Consolidated `final/assign2-ms7556.ipynb` (Step 4 final + author line, GitHub data fallback, CPU model, summary section) verified top-to-bottom in Colab
+- [x] Consolidated `notebook/assign2-ms7556.ipynb` executed top-to-bottom in Colab (outputs saved; report synced to this run)
 - [x] 7-page report drafted (`report/Assignment2_Report.pdf`); Colab link still to be inserted
 - [ ] Colab Viewer access verified using Columbia LionMail
 
