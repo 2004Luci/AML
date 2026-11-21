@@ -191,8 +191,8 @@ Figures used in the PDF must be embedded in the PDF; graders will not open the n
 
 Starting point only; record the final values here once a Colab run fixes them.
 
-- BPE via Hugging Face `tokenizers`, vocabulary 500 including special tokens
-- N = 64 tokens of context
+- **Fixed in Step 1:** character-level BPE via Hugging Face `tokenizers` (newline isolated, Metaspace `▁` for spaces), vocabulary 500 = `[UNK]` + 65 characters + 434 merges; unseen characters map to `[UNK]`; saved to `artifacts/tokenizer.json`
+- **Fixed in Step 1:** N = 64; 407,182 train tokens, 105,963 validation tokens; 1,655 stride-64 validation windows → 105,920 evaluated targets; final short window (42 targets) dropped
 - d_model = 128, 4 heads, 2 blocks, feed-forward width 4 × d_model, small dropout
 - AdamW, batch size 64, fixed step budget sized for a Colab CPU/T4 run in minutes
 - Controlled change: learning rate (baseline vs one or two alternatives)
