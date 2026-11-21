@@ -1,18 +1,30 @@
 ---
-description: Assignment 3 workflow and notebook-first guardrails
+description: Assignment 3 dual-track notebook workflow and guardrails
 alwaysApply: true
 ---
 
-Follow `AGENTS.md` for Assignment 3 guardrails.
+Follow `AGENTS.md` for Assignment 3 guardrails. `Assignment3.pdf` is the authoritative spec.
 
-For every meaningful change:
+Maintain two notebook tracks until all steps are done (same dual-track workflow as early Assignments 1 and 2):
 
-1. Explain in chat (what, why, tensor shapes where relevant, alternatives, risks, assignment fit, report impact).
-2. Update the submission notebook under `/notebook/` (`assign3-ms7556.ipynb`).
-3. Re-run in Colab and sync the notebook text, `/assets/` figures, and report to the new outputs.
+- Submission: `/notebook/submission/assign3_step<N>.ipynb`
+- Learning: `/notebook/learning/assign3_step<N>.ipynb`
+- Consolidated Colab deliverable (when Steps 1–4 are done): `/notebook/assign3-ms7556.ipynb`
 
-The `.ipynb` is the technical deliverable. `Assignment3.pdf` is the authoritative spec.
+For every meaningful step:
 
-Never invent results. Split the raw text by position before fitting the tokenizer; fit BPE/WordPiece (vocabulary ≤ 500) on training text only; build attention from basic layers (no `nn.MultiheadAttention`, `nn.Transformer`, or fused attention); mask before softmax; use cross-entropy on raw logits with shifted targets; change one factor at a time under a fixed step budget. Prefer small, justified notebook edits; keep the notebook submission-ready (no checkpoint/meta clutter). Verify with real outputs.
+1. Explain in chat what is changing, why, tensor shapes where relevant, alternatives/risks, how it satisfies the assignment, and what should be discussed in the report.
+2. Update the **submission** notebook for that step. Keep it runnable, reproducible, and submission-ready (no checkpoint/process meta notes aimed at graders).
+3. Mirror the same correct implementation into the **learning** notebook, adding learning notes, TODOs, self-check questions, and report prompts.
+4. Validate with real execution outputs. Never invent results or claim cells were run when they were not.
 
-Work one step per branch and PR (`feature/step<N>-a3`), as in Assignments 1 and 2. Details on data, model, evaluation, attention plots, report rules, and rubric are in `AGENTS.md`.
+Core assignment constraints:
+
+- Dataset is Tiny Shakespeare (`input.txt`). Prefer Colab upload; otherwise download from the source URL and verify SHA-256. Record source and download date.
+- Split raw text 80/20 by position **before** fitting the tokenizer or creating windows. Fit BPE/WordPiece (vocabulary ≤ 500 including specials) on training text only. Windows: input `z[0:N]`, target `z[1:N+1]`; no window crosses the split; validation uses stride `N`.
+- Build attention from basic layers (`nn.Linear`, `nn.Embedding`, `nn.RMSNorm` allowed). Do not use `nn.Transformer`, `nn.MultiheadAttention`, fused attention, or a pretrained model as the submitted attention. Mask before softmax; causal checks in `eval()`.
+- Cross-entropy on raw logits with shifted targets. Baseline + one controlled change; same split, tokenizer, context length, seed, and step budget. Select by validation cross-entropy. PPL = exp(validation NLL per scored token); never average batch PPLs.
+- Attention heatmaps: labeled tokens, ≥ 2 heads or layers, post-softmax pre-dropout probabilities. Interpret patterns; do not claim causal importance from bright cells alone.
+- PDF report: 5–7 pages, page map for Steps 1–4 and AI disclosure, no code, Colab link at the very end with LionMail Viewer access.
+
+Work one step per branch and PR (`feature/step<N>-a3`). Details are in `AGENTS.md`.

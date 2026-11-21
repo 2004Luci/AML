@@ -8,7 +8,9 @@ This folder holds **Assignment 3: Transformer is All You Need** (COMS W4995 Appl
 
 | Deliverable | Path |
 |---|---|
-| Runnable notebook (Colab, outputs saved) | `/notebook/assign3-ms7556.ipynb` |
+| Consolidated Colab notebook (after all steps) | `/notebook/assign3-ms7556.ipynb` |
+| Intermediate submission notebooks | `/notebook/submission/assign3_step<N>.ipynb` |
+| Intermediate learning notebooks | `/notebook/learning/assign3_step<N>.ipynb` |
 | Written report (5–7 pages, no code) | `/report/Assignment3_Report.pdf` |
 | Report figures | `/assets/` |
 | Saved tokenizer and selected checkpoint | `/artifacts/` |
@@ -16,9 +18,20 @@ This folder holds **Assignment 3: Transformer is All You Need** (COMS W4995 Appl
 
 `Assignment3.pdf` is the source of truth for requirements, experiments, metrics, report rules, rubric, AI disclosure, and Colab access.
 
-The notebook is the technical deliverable: all code, outputs, figures, and technical reasoning live there. The PDF is written from those results. Repository layout is secondary.
+### Dual-track notebooks (same pattern as early Assignments 1 and 2)
 
-The notebook reads `input.txt` from its working directory (Colab upload) and otherwise downloads it from Karpathy's char-rnn repository (`data/raw-url.txt`). A SHA-256 check guarantees every run uses the same text. Colab is the source of truth for every reported number.
+Until Steps 1–4 are finished, maintain **two** tracks:
+
+| Track | Path | Role |
+|---|---|---|
+| **Submission** | `/notebook/submission/assign3_step<N>.ipynb` | Clean, runnable, submission-ready. No grader checklists, TODOs, or process meta notes. |
+| **Learning** | `/notebook/learning/assign3_step<N>.ipynb` | Same correct code as submission, plus learning notes, self-check questions, TODOs, and report prompts. |
+
+Naming: `assign3_step0.ipynb` (setup), then `assign3_step1.ipynb` … `assign3_step4.ipynb`. Each step notebook carries forward the prior step's working cells.
+
+When every step is done, consolidate the submission track into `/notebook/assign3-ms7556.ipynb` (executed in Colab with outputs saved), drop or archive the intermediate step notebooks in cleanup, and write the report from that consolidated run. Colab is the source of truth for every reported number.
+
+The notebook reads `input.txt` from its working directory (Colab upload) and otherwise downloads it from Karpathy's char-rnn repository (`data/raw-url.txt`). A SHA-256 check guarantees every run uses the same text.
 
 ---
 
@@ -40,32 +53,37 @@ Before a meaningful change, explain:
 
 Do not assume prior deep-learning background. The handout expects the student to answer, without notes: why targets are shifted, what prevents a token from seeing the future, and why a lower validation loss came from a fair experiment.
 
-## B — Update the notebook
+## B — Update both notebook tracks
 
-Edit `/notebook/assign3-ms7556.ipynb`.
+For the current step `N`:
 
-The notebook must:
+1. Edit `/notebook/submission/assign3_step<N>.ipynb` first (source of truth for correctness).
+2. Mirror the same implementation into `/notebook/learning/assign3_step<N>.ipynb`, then add or refresh learning notes, self-checks, TODOs, and report prompts.
 
-- run top-to-bottom without errors in Colab
-- be reproducible (`SEED = 42`, fixed split, saved tokenizer and checkpoint)
+Both notebooks must:
+
+- run top-to-bottom without errors (locally or in Colab)
+- be reproducible (`SEED = 42`, fixed split; later steps save tokenizer and checkpoint)
 - use clear names and short comments only where intent is non-obvious
 - use Markdown for methodology, decisions, and interpretation
 - show real outputs and figures (never invent results)
-- avoid TODOs, placeholders, dead code, and meta/process notes aimed at graders
 - comply with `Assignment3.pdf`
 
-Student-facing teaching can stay in chat. The notebook itself should read as a finished submission.
+The **submission** notebook must stay clean: no TODOs, placeholders, dead code, or meta/process notes aimed at graders. Teaching content belongs in the **learning** notebook and in chat.
+
+After Steps 1–4 are complete, consolidate submission into `/notebook/assign3-ms7556.ipynb` for the Colab deliverable.
 
 ## C — Re-run and re-sync
 
-Any code change requires a fresh Colab run. After it, update the notebook's interpretation text, the exported figures in `/assets/`, and the report so every number matches the new outputs (training times change between runs).
+Any code change requires a fresh run. After the final Colab consolidation, update the notebook's interpretation text, the exported figures in `/assets/`, and the report so every number matches the new outputs (training times change between runs).
 
 ## D — Git workflow (same as Assignments 1 and 2)
 
 - One branch and PR per step: `feature/step1-a3`, `feature/step2-a3`, `feature/step3-a3`, `feature/step4-a3`, then `feature/report-a3`; small fixes on `update/<topic>`
+- Each step PR updates **both** `submission/` and `learning/` notebooks for that step
 - Commit figures separately ("add png assets") after a Colab run
 - CodeRabbit reviews each PR; triage every finding against the current code, fix only what is still valid, and commit as "review changes"
-- Finish with cleanup and docs passes (README, AGENTS.md, notebook wording) before submission
+- Finish with cleanup: consolidate to `assign3-ms7556.ipynb`, then docs passes (README, AGENTS.md, notebook wording) before submission
 
 ---
 
@@ -240,11 +258,11 @@ Do not claim AI-written code or text was independently authored by the student.
 
 When asked to continue or edit:
 
-1. **Inspect** the current notebook, `Assignment3.pdf`, and real Colab outputs.
+1. **Inspect** the current step notebooks, `Assignment3.pdf`, and real outputs.
 2. **Explain** the change in chat.
-3. **Edit** `/notebook/assign3-ms7556.ipynb` with the smallest sufficient change.
-4. **Verify** with a real Colab run. Never invent outputs.
-5. **Sync** the notebook text, `/assets/`, and the report to the new outputs, then confirm the assignment requirements are still met.
+3. **Edit** the submission step notebook with the smallest sufficient change, then mirror into learning.
+4. **Verify** with a real run. Never invent outputs.
+5. After consolidation: **Sync** `assign3-ms7556.ipynb`, `/assets/`, and the report to the Colab outputs, then confirm the assignment requirements are still met.
 
 ---
 
@@ -268,9 +286,10 @@ When asked to continue or edit:
 
 # 17. Done when
 
-**Notebook**
+**Notebooks**
 
-- Runs top-to-bottom in Colab with outputs saved
+- Each step's submission and learning notebooks run top-to-bottom; learning mirrors submission correctness
+- Final `assign3-ms7556.ipynb` runs in Colab with outputs saved
 - Source, download date, and SHA-256 recorded; positional split before tokenizer; vocabulary ≤ 500; unseen-symbol handling explained
 - Windows and validation token count reported; final short window handled and stated
 - Transformer built from basic layers; both causality checks pass
