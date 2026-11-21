@@ -39,7 +39,7 @@ When all steps are done, consolidate the submission track into `notebook/assign3
 | Step | Content | Submission | Learning |
 |---|---|---|---|
 | 0 Setup | Environment, data loading, source/date/SHA-256 | `assign3_step0.ipynb` | `assign3_step0.ipynb` |
-| 1 | Positional 80/20 split, BPE tokenizer, token windows | Not started | Not started |
+| 1 | Positional 80/20 split, BPE tokenizer, token windows | `assign3_step1.ipynb` | `assign3_step1.ipynb` |
 | 2 | Tiny Transformer, causality checks, baseline + controlled change | Not started | Not started |
 | 3 | Loss curves, validation loss and perplexity, attention heatmaps | Not started | Not started |
 | 4 | Comparison table and discussion | Not started | Not started |
