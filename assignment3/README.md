@@ -42,7 +42,7 @@ When all steps are done, consolidate the submission track into `notebook/assign3
 | 1 | Positional 80/20 split, BPE tokenizer, token windows | `assign3_step1.ipynb` | `assign3_step1.ipynb` |
 | 2 | Tiny Transformer, causality checks, baseline + controlled change | `assign3_step2.ipynb` | `assign3_step2.ipynb` |
 | 3 | Loss curves, validation loss and perplexity, attention heatmaps | `assign3_step3.ipynb` | `assign3_step3.ipynb` |
-| 4 | Comparison table and discussion | Not started | Not started |
+| 4 | Comparison table and discussion | `assign3_step4.ipynb` | `assign3_step4.ipynb` |
 | Consolidate | `assign3-ms7556.ipynb` executed in Colab | Pending | — |
 | Report | `report/Assignment3_Report.pdf` with Colab link at the end | Not started | — |
 
