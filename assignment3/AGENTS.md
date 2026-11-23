@@ -8,9 +8,7 @@ This folder holds **Assignment 3: Transformer is All You Need** (COMS W4995 Appl
 
 | Deliverable | Path |
 |---|---|
-| Consolidated Colab notebook (after all steps) | `/notebook/assign3-ms7556.ipynb` |
-| Intermediate submission notebooks | `/notebook/submission/assign3_step<N>.ipynb` |
-| Intermediate learning notebooks | `/notebook/learning/assign3_step<N>.ipynb` |
+| Runnable notebook (Colab, outputs saved) | `/notebook/assign3-ms7556.ipynb` |
 | Written report (5–7 pages, no code) | `/report/Assignment3_Report.pdf` |
 | Report figures | `/assets/` |
 | Saved tokenizer and selected checkpoint | `/artifacts/` |
@@ -18,20 +16,9 @@ This folder holds **Assignment 3: Transformer is All You Need** (COMS W4995 Appl
 
 `Assignment3.pdf` is the source of truth for requirements, experiments, metrics, report rules, rubric, AI disclosure, and Colab access.
 
-### Dual-track notebooks (same pattern as early Assignments 1 and 2)
+The notebook is the technical deliverable: all code, outputs, figures, and technical reasoning live there. The PDF is written from those results. Repository layout is secondary.
 
-Until Steps 1–4 are finished, maintain **two** tracks:
-
-| Track | Path | Role |
-|---|---|---|
-| **Submission** | `/notebook/submission/assign3_step<N>.ipynb` | Clean, runnable, submission-ready. No grader checklists, TODOs, or process meta notes. |
-| **Learning** | `/notebook/learning/assign3_step<N>.ipynb` | Same correct code as submission, plus learning notes, self-check questions, TODOs, and report prompts. |
-
-Naming: `assign3_step0.ipynb` (setup), then `assign3_step1.ipynb` … `assign3_step4.ipynb`. Each step notebook carries forward the prior step's working cells.
-
-When every step is done, consolidate the submission track into `/notebook/assign3-ms7556.ipynb` (executed in Colab with outputs saved), drop or archive the intermediate step notebooks in cleanup, and write the report from that consolidated run. Colab is the source of truth for every reported number.
-
-The notebook reads `input.txt` from its working directory (Colab upload) and otherwise downloads it from Karpathy's char-rnn repository (`data/raw-url.txt`). A SHA-256 check guarantees every run uses the same text.
+The notebook reads `input.txt` from its working directory (Colab upload) and otherwise downloads it from Karpathy's char-rnn repository (`data/raw-url.txt`). A SHA-256 check guarantees every run uses the same text. Colab is the source of truth for every reported number.
 
 ---
 
@@ -53,37 +40,25 @@ Before a meaningful change, explain:
 
 Do not assume prior deep-learning background. The handout expects the student to answer, without notes: why targets are shifted, what prevents a token from seeing the future, and why a lower validation loss came from a fair experiment.
 
-## B — Update both notebook tracks
+## B — Update the notebook
 
-For the current step `N`:
+Edit `/notebook/assign3-ms7556.ipynb`.
 
-1. Edit `/notebook/submission/assign3_step<N>.ipynb` first (source of truth for correctness).
-2. Mirror the same implementation into `/notebook/learning/assign3_step<N>.ipynb`, then add or refresh learning notes, self-checks, TODOs, and report prompts.
+The notebook must:
 
-Both notebooks must:
-
-- run top-to-bottom without errors (locally or in Colab)
-- be reproducible (`SEED = 42`, fixed split; later steps save tokenizer and checkpoint)
+- run top-to-bottom without errors in Colab
+- be reproducible (`SEED = 42`, fixed positional split; tokenizer and checkpoint saved)
 - use clear names and short comments only where intent is non-obvious
 - use Markdown for methodology, decisions, and interpretation
 - show real outputs and figures (never invent results)
+- avoid TODOs, placeholders, dead code, and meta/process notes aimed at graders
 - comply with `Assignment3.pdf`
 
-The **submission** notebook must stay clean: no TODOs, placeholders, dead code, or meta/process notes aimed at graders. Teaching content belongs in the **learning** notebook and in chat.
-
-After Steps 1–4 are complete, consolidate submission into `/notebook/assign3-ms7556.ipynb` for the Colab deliverable.
+Student-facing teaching can stay in chat. The notebook itself should read as a finished submission.
 
 ## C — Re-run and re-sync
 
-Any code change requires a fresh run. After the final Colab consolidation, update the notebook's interpretation text, the exported figures in `/assets/`, and the report so every number matches the new outputs (training times change between runs).
-
-## D — Git workflow (same as Assignments 1 and 2)
-
-- One branch and PR per step: `feature/step1-a3`, `feature/step2-a3`, `feature/step3-a3`, `feature/step4-a3`, then `feature/report-a3`; small fixes on `update/<topic>`
-- Each step PR updates **both** `submission/` and `learning/` notebooks for that step
-- Commit figures separately ("add png assets") after a Colab run
-- CodeRabbit reviews each PR; triage every finding against the current code, fix only what is still valid, and commit as "review changes"
-- Finish with cleanup: consolidate to `assign3-ms7556.ipynb`, then docs passes (README, AGENTS.md, notebook wording) before submission
+Any code change requires a fresh Colab run. After it, update the notebook's interpretation text, the exported figures in `/assets/`, the artifacts, and the report so every number matches the new outputs (training times change between runs). Rebuild the PDF with `report/build_report.py --colab <URL>`.
 
 ---
 
@@ -127,25 +102,25 @@ Dataset: **Tiny Shakespeare** (`input.txt` from Karpathy's char-rnn repository).
 
 ---
 
-# 6. Data preparation rules
+# 6. Data preparation decisions
 
-| Item | Rule |
+| Item | Decision |
 |---|---|
 | Split | By position: first 80% train, final 20% validation; done on raw text **before** fitting the tokenizer or creating windows |
-| Tokenizer | Subword BPE or WordPiece (Hugging Face `tokenizers` allowed), fitted on **training text only**; total vocabulary ≤ 500 including special tokens; reused unchanged for validation and every configuration |
-| Unseen symbols | Explain the mechanism (for example an `[UNK]` token, or byte-level BPE where every byte is in the base alphabet) |
-| Windows | `N + 1` tokens; input `z[0:N]`, target `z[1:N+1]`; built within each split, so no window crosses the boundary |
-| Training windows | May overlap (random offsets) |
-| Validation windows | Fixed, stride `N`, so each target position is scored once; state whether the final short window is dropped or padded with padded targets excluded; report the number of evaluated target tokens |
-| Context length | Fixed for all configurations (handout example N = 50) |
+| Tokenizer | Character-level BPE (Hugging Face `tokenizers`); newline isolated, Metaspace `▁` for spaces; vocabulary 500 = `[UNK]` + 65 characters + 434 merges; fitted on training text only; reused for validation and every configuration |
+| Unseen symbols | Map to `[UNK]` (keeps sequence length, loses the symbol); no `[UNK]` in either split of this corpus |
+| Windows | `N + 1` = 65 tokens; input `z[0:64]`, target `z[1:65]`; built within each split |
+| Training windows | Random offsets (may overlap) |
+| Validation windows | Stride 64; 1,655 windows → **105,920 evaluated target tokens**; final short window (42 targets) dropped |
+| Context length | `N` = 64 for all configurations |
 
 ---
 
 # 7. Model rules
 
 - PyTorch for model and training loop
-- Components: token embedding, sinusoidal positional encoding added to embeddings (RoPE on queries/keys is an optional alternative), causal multi-head self-attention, residual connections, `nn.RMSNorm`, feed-forward network, vocabulary output projection
-- Size: 1–2 blocks, hidden size ≤ 128, 2 or 4 heads, hidden size divisible by heads
+- Components: token embedding, sinusoidal positional encoding added to embeddings, causal multi-head self-attention, residual connections, `nn.RMSNorm`, feed-forward network, vocabulary output projection
+- Size used here: 2 pre-norm blocks, hidden size 128, 4 heads, FFN 512 with GELU, dropout 0.1 → **524,660 parameters**
 - Attention written with tensor operations and basic layers: Q/K/V projections, scaled dot-product scores, causal mask, softmax over keys, head concatenation, output projection
 - Allowed: `nn.Linear`, `nn.Embedding`, `nn.RMSNorm`
 - Forbidden as the submitted attention: `nn.Transformer`, `nn.MultiheadAttention`, `F.scaled_dot_product_attention` (or any fused attention), pretrained models. A PyTorch reference may be used only to **check** an isolated attention calculation with the same weights, inputs, mask, and dropout setting
@@ -157,16 +132,18 @@ Dataset: **Tiny Shakespeare** (`input.txt` from Karpathy's char-rnn repository).
 1. Attention weights above the diagonal are exactly zero
 2. Changing future input tokens leaves earlier positions' logits unchanged
 
+Both checks pass on the untrained and the selected model.
+
 ---
 
 # 8. Training and experiment rules
 
 - Loss: `cross_entropy` on raw logits and shifted target IDs; logits `(B, N, V)` → `(B·N, V)`, targets `(B, N)` → `(B·N)`; no softmax before the loss
-- Checkpoint selected by validation cross-entropy
-- Baseline plus **one** controlled change (for example learning rate or number of blocks); 2–3 configurations; no grid search
-- Held fixed across configurations: split, tokenizer, context length, seed, training-step budget
-- Record per configuration: optimizer, batch size, learning rate, steps, parameter count, hardware, package versions, seed, training time
-- Save the tokenizer and the selected checkpoint to `/artifacts/`
+- Optimizer: AdamW, weight decay 0.01, constant learning rate, gradient-norm clipping at 1.0
+- Budget: 5,000 steps; batch 64 windows × 64 tokens; validation every 100 steps (and at step 0) on all 105,920 targets
+- Controlled change: **learning rate** `{3e-4, 1e-3 (baseline), 3e-3}`
+- Held fixed: split, tokenizer, context length, model, seed 42, step budget, validation tokens
+- Checkpoint selected by validation cross-entropy; tokenizer and selected checkpoint saved to `/artifacts/`
 
 ---
 
@@ -175,27 +152,28 @@ Dataset: **Tiny Shakespeare** (`input.txt` from Karpathy's char-rnn repository).
 | Item | Rule |
 |---|---|
 | Mode | `model.eval()` and `torch.no_grad()` |
-| Validation loss | Total NLL ÷ number of non-padding target tokens over the fixed stride-`N` windows |
+| Validation loss | Total NLL ÷ 105,920 scored targets over the fixed stride-`N` windows |
 | Perplexity | `PPL = exp(validation loss)`; never average batch perplexities; compare PPL only with the same tokenizer, validation tokens, and window procedure |
-| Loss curves | Training and validation cross-entropy vs training steps; state what each curve measures (for example mini-batch loss in train mode vs full validation loss in eval mode) and use them to discuss convergence/overfitting |
-| Attention heatmaps | One fixed validation sequence; ≥ 2 heads or layers; axes labeled with actual token strings; query rows, key columns; layer/head and checkpoint in the title; probabilities after softmax, before dropout; fixed sequence and color scale when comparing checkpoints |
-| Interpretation | 2–3 concrete patterns using the displayed tokens, including the causal boundary; attention weights describe the computation, not causal importance or understanding |
+| Loss curves | Training and validation cross-entropy vs training steps; state what each curve measures |
+| Attention heatmaps | One fixed validation sequence (window 3, first 32 tokens); all 4 heads in both layers; axes labeled with actual token strings; post-softmax, pre-dropout; fixed 0–1 color scale; grey future mask |
+| Head statistics | Mean previous/self/first/distance/entropy over all validation windows (query positions 16–63) |
 | Comparison table | Configurations, parameter counts, training time, best validation loss, PPL |
-| Optional samples | Report prompt and decoding settings; they do not replace curves or attention analysis |
+| Optional probes | Positional encodings zeroed (no retraining); unigram baseline; runtime/memory; sample text |
 
 Figures used in the PDF must be embedded in the PDF; graders will not open the notebook to find graphs.
 
 ---
 
-# 10. Planned defaults (confirm when implementing Step 2)
+# 10. Final results (Colab T4 run)
 
-Starting point only; record the final values here once a Colab run fixes them.
+- Selected: **lr 3e-3**, best validation loss **3.3632** at step 4,300 (PPL **28.88**); final gap 0.605 nats; training time 45.8 s (excludes ~3 s validation)
+- Other configs: 3e-4 → 3.4827 / 32.55 at step 4,600 (gap 0.343); 1e-3 → 3.3808 / 29.39 at step 4,300 (gap 0.510)
+- Causality: future attention weight 0; earlier logits unchanged under a future edit; reference attention match within 1e-6
+- Attention: layer-1 heads 1/3/4 are previous-token heads (0.40–0.54); head 2 is broader (distance 7.3); layer-2 heads look further back (5.8–6.7); first-token attention 0.00; uniform entropy 3.64
+- Positional probe: unigram 5.5311 (PPL 252.42); encodings zeroed 4.5038 (90.36); full model 3.3632 (28.88) → keeps 47% of the gain over unigram
+- Runtime: Python 3.13.16, PyTorch 2.14.1+cu130, tokenizers 0.23.3, NumPy 2.4.6, matplotlib 3.10.0; Tesla T4 14.6 GB, Intel Xeon 2.00 GHz (2 cores)
 
-- **Fixed in Step 1:** character-level BPE via Hugging Face `tokenizers` (newline isolated, Metaspace `▁` for spaces), vocabulary 500 = `[UNK]` + 65 characters + 434 merges; unseen characters map to `[UNK]`; saved to `artifacts/tokenizer.json`
-- **Fixed in Step 1:** N = 64; 407,182 train tokens, 105,963 validation tokens; 1,655 stride-64 validation windows → 105,920 evaluated targets; final short window (42 targets) dropped
-- d_model = 128, 4 heads, 2 blocks, feed-forward width 4 × d_model, small dropout
-- AdamW, batch size 64, fixed step budget sized for a Colab CPU/T4 run in minutes
-- Controlled change: learning rate (baseline vs one or two alternatives)
+Local macOS (MPS) runs differ slightly in timings and floating-point values; report only Colab numbers.
 
 ---
 
@@ -230,7 +208,7 @@ Structure:
 6. References
 7. Additional Resource (GitHub link and the Colab link)
 
-The report is generated from the Colab results with a reportlab script (`report/build_report.py --colab <URL>`). The Colab link must appear **at the very end**, shared so any Columbia LionMail account can open it as Viewer (10-point deduction otherwise). Embed all required figures and tables; do not shrink them to fit more experiments.
+The report is generated with `report/build_report.py --colab <URL>`. The Colab link must appear **at the very end**, shared so any Columbia LionMail account can open it as Viewer (10-point deduction otherwise). Embed all required figures and tables; do not shrink them to fit more experiments.
 
 ---
 
@@ -258,11 +236,11 @@ Do not claim AI-written code or text was independently authored by the student.
 
 When asked to continue or edit:
 
-1. **Inspect** the current step notebooks, `Assignment3.pdf`, and real outputs.
+1. **Inspect** the current notebook, `Assignment3.pdf`, and real Colab outputs.
 2. **Explain** the change in chat.
-3. **Edit** the submission step notebook with the smallest sufficient change, then mirror into learning.
-4. **Verify** with a real run. Never invent outputs.
-5. After consolidation: **Sync** `assign3-ms7556.ipynb`, `/assets/`, and the report to the Colab outputs, then confirm the assignment requirements are still met.
+3. **Edit** `/notebook/assign3-ms7556.ipynb` with the smallest sufficient change.
+4. **Verify** with a real Colab run. Never invent outputs.
+5. **Sync** the notebook text, `/assets/`, `/artifacts/`, and the report to the new outputs, then confirm the assignment requirements are still met.
 
 ---
 
@@ -286,10 +264,9 @@ When asked to continue or edit:
 
 # 17. Done when
 
-**Notebooks**
+**Notebook**
 
-- Each step's submission and learning notebooks run top-to-bottom; learning mirrors submission correctness
-- Final `assign3-ms7556.ipynb` runs in Colab with outputs saved
+- Runs top-to-bottom in Colab with outputs saved
 - Source, download date, and SHA-256 recorded; positional split before tokenizer; vocabulary ≤ 500; unseen-symbol handling explained
 - Windows and validation token count reported; final short window handled and stated
 - Transformer built from basic layers; both causality checks pass
@@ -299,7 +276,7 @@ When asked to continue or edit:
 **Report**
 
 - 5–7 pages, page map for Steps 1–4 and AI disclosure, embedded figures and tables, no code
-- Introduction, Methods, Results, Discussion, AI disclosure, references
+- Discussion covers the Step 4 points and limitations; references and AI disclosure included
 - Numbers match the notebook; Colab link at the very end with LionMail Viewer access verified
 
 ---
