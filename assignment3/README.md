@@ -17,8 +17,7 @@ assignment3/
 ├── notebook/
 │   └── assign3-ms7556.ipynb     # Final runnable notebook (executed in Colab, outputs saved)
 └── report/
-    ├── Assignment3_Report.pdf   # Final written report (no code)
-    └── build_report.py          # Regenerates the PDF (pass --colab URL)
+    └── Assignment3_Report.pdf   # Final written report (no code)
 ```
 
 ## What each part contains
@@ -70,7 +69,7 @@ The 7-page written report for submission (analysis only; no code). It includes:
 - Introduction, Methods, Results, Discussion
 - AI Tool Usage Disclosure, References, and the Colab notebook link at the end
 
-Required figures and tables from the notebook are embedded in the PDF. Rebuild with `python report/build_report.py --colab "<url>"` after the consolidated Colab share link is available.
+Required figures and tables from the notebook are embedded in the PDF.
 
 ## Related paths outside this folder
 

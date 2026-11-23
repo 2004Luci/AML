@@ -38,7 +38,7 @@ Before a meaningful change, explain:
 8. What the student should be able to defend in review
 9. What belongs in the PDF report
 
-Do not assume prior deep-learning background. The handout expects the student to answer, without notes: why targets are shifted, what prevents a token from seeing the future, and why a lower validation loss came from a fair experiment.
+Do not assume prior deep-learning background.
 
 ## B — Update the notebook
 
@@ -58,7 +58,7 @@ Student-facing teaching can stay in chat. The notebook itself should read as a f
 
 ## C — Re-run and re-sync
 
-Any code change requires a fresh Colab run. After it, update the notebook's interpretation text, the exported figures in `/assets/`, the artifacts, and the report so every number matches the new outputs (training times change between runs). Rebuild the PDF with `report/build_report.py --colab <URL>`.
+Any code change requires a fresh Colab run. After it, update the notebook's interpretation text, `/assets/`, `/artifacts/`, and the report so every number matches the new outputs (training times change between runs).
 
 ---
 
@@ -164,7 +164,7 @@ Figures used in the PDF must be embedded in the PDF; graders will not open the n
 
 ---
 
-# 10. Final results (Colab T4 run)
+# 10. Final results (Colab run in the submitted notebook)
 
 - Selected: **lr 3e-3**, best validation loss **3.3632** at step 4,300 (PPL **28.88**); final gap 0.605 nats; training time 45.8 s (excludes ~3 s validation)
 - Other configs: 3e-4 → 3.4827 / 32.55 at step 4,600 (gap 0.343); 1e-3 → 3.3808 / 29.39 at step 4,300 (gap 0.510)
@@ -188,7 +188,7 @@ Pattern for analysis sections:
 
 Prefer small logical cells. Comments explain intent, assumptions, shapes, or risks — not restating obvious code.
 
-Avoid submission-noise: "checkpoint" process notes, "current scope", "notebook goal", Colab how-to blocks, step-handoff notes, and grader checklists. In Markdown, write sets and math-like text in backticks (for example `N` in `{50, 64}`) because Colab's MathJax swallows bare `{...}`.
+Avoid submission-noise: "checkpoint", "current scope", "notebook goal", step-handoff notes, and grader checklists. In Markdown, write sets and math-like text in backticks (for example `N` in `{50, 64}`) because Colab's MathJax swallows bare `{...}`.
 
 ---
 
@@ -196,7 +196,7 @@ Avoid submission-noise: "checkpoint" process notes, "current scope", "notebook g
 
 PDF: **5–7 pages** including figures and references; no code in body or appendix.
 
-Page 1: title block, Colab notebook link, page map for Steps 1–4 and the AI disclosure, short summary.
+Page 1: title block, Colab notebook line, page map for Steps 1–4, summary.
 
 Structure:
 
@@ -204,11 +204,10 @@ Structure:
 2. Methods
 3. Results
 4. Discussion (what the attention maps revealed, effect of the controlled change on stability, roles of positional encoding and masking, runtime/memory bottlenecks, limitations)
-5. AI Tool Usage Disclosure (same format as Assignments 1 and 2: tools used, what the tools contributed, self contribution)
+5. AI Tool Usage Disclosure
 6. References
-7. Additional Resource (GitHub link and the Colab link)
 
-The report is generated with `report/build_report.py --colab <URL>`. The Colab link must appear **at the very end**, shared so any Columbia LionMail account can open it as Viewer (10-point deduction otherwise). Embed all required figures and tables; do not shrink them to fit more experiments.
+The Colab link must be at the very end, shared so any Columbia LionMail account can open it as Viewer (10-point deduction otherwise). Embed all required figures and tables; do not shrink them to fit more experiments.
 
 ---
 
@@ -277,7 +276,7 @@ When asked to continue or edit:
 
 - 5–7 pages, page map for Steps 1–4 and AI disclosure, embedded figures and tables, no code
 - Discussion covers the Step 4 points and limitations; references and AI disclosure included
-- Numbers match the notebook; Colab link at the very end with LionMail Viewer access verified
+- Numbers match the notebook; Colab link at the end with LionMail Viewer access verified
 
 ---
 
