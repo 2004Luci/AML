@@ -1,50 +1,25 @@
 # Assignment 3
 
-This folder holds the work for **Assignment 3: Transformer is All You Need**, implementing and training a small decoder-only Transformer in PyTorch for next-token prediction on Tiny Shakespeare, then visualizing its attention.
+This folder holds the completed work for **Assignment 3: Transformer is All You Need**, implementing and training a small decoder-only Transformer in PyTorch for next-token prediction on Tiny Shakespeare, then visualizing its attention.
 
 ## Layout
 
 ```
 assignment3/
-├── Assignment3.pdf                 # Official assignment handout
-├── AGENTS.md                       # Workflow / AI guardrails used while building the work
-├── README.md                       # This file
-├── artifacts/                      # Saved tokenizer and selected checkpoint (from the Colab run)
-├── assets/                         # Report figures exported from the Colab run
+├── Assignment3.pdf              # Official assignment handout
+├── AGENTS.md                    # Workflow / AI guardrails used while building the work
+├── README.md                    # This file
+├── artifacts/                   # Tokenizer and selected checkpoint from the Colab run
+├── assets/                      # Report figures exported from the Colab run
 ├── data/
-│   ├── input.txt                   # Tiny Shakespeare corpus used by the notebook
-│   └── raw-url.txt                 # Source URL of input.txt
+│   ├── input.txt                # Tiny Shakespeare corpus used by the notebook
+│   └── raw-url.txt              # Source URL of input.txt
 ├── notebook/
-│   ├── submission/                 # Clean step notebooks (source of truth for correctness)
-│   │   └── assign3_step0.ipynb
-│   ├── learning/                   # Same code + learning notes, self-checks, report prompts
-│   │   └── assign3_step0.ipynb
-│   └── assign3-ms7556.ipynb        # Consolidated Colab deliverable (after Steps 1–4)
-└── report/                         # Written report (no code)
+│   └── assign3-ms7556.ipynb     # Final runnable notebook (executed in Colab, outputs saved)
+└── report/
+    ├── Assignment3_Report.pdf   # Final written report (no code)
+    └── build_report.py          # Regenerates the PDF (pass --colab URL)
 ```
-
-## Dual-track notebooks
-
-Until Steps 1–4 are finished, every step has **two** notebooks (same pattern as early Assignments 1 and 2):
-
-| Track | Folder | Role |
-|------|--------|------|
-| Submission | `notebook/submission/` | Runnable and submission-ready; no TODOs or grader meta notes |
-| Learning | `notebook/learning/` | Mirrors submission, plus teaching notes and self-check questions |
-
-When all steps are done, consolidate the submission track into `notebook/assign3-ms7556.ipynb`, run it in Colab with outputs saved, and clean up the intermediate step notebooks.
-
-## Status
-
-| Step | Content | Submission | Learning |
-|---|---|---|---|
-| 0 Setup | Environment, data loading, source/date/SHA-256 | `assign3_step0.ipynb` | `assign3_step0.ipynb` |
-| 1 | Positional 80/20 split, BPE tokenizer, token windows | `assign3_step1.ipynb` | `assign3_step1.ipynb` |
-| 2 | Tiny Transformer, causality checks, baseline + controlled change | `assign3_step2.ipynb` | `assign3_step2.ipynb` |
-| 3 | Loss curves, validation loss and perplexity, attention heatmaps | `assign3_step3.ipynb` | `assign3_step3.ipynb` |
-| 4 | Comparison table and discussion | `assign3_step4.ipynb` | `assign3_step4.ipynb` |
-| Consolidate | `assign3-ms7556.ipynb` executed in Colab | Pending | — |
-| Report | `report/Assignment3_Report.pdf` with Colab link at the end | Not started | — |
 
 ## What each part contains
 
@@ -54,15 +29,19 @@ The course specification for Assignment 3. It defines the four steps (data prepa
 
 ### `AGENTS.md`
 
-Local instructions that govern how the notebooks and report are produced with AI assistance: dual-track workflow, assignment-first compliance, split-before-tokenizer data preparation, a from-scratch causal attention implementation, one controlled change under a fixed budget, correct loss and perplexity, and the report expectations.
+Local instructions that governed how the notebook and report were produced with AI assistance: assignment-first compliance, split-before-tokenizer data preparation, a from-scratch causal attention implementation, one controlled change under a fixed budget, correct loss and perplexity, and the final report expectations.
 
 ### `artifacts/`
 
-The BPE tokenizer and the selected model checkpoint saved by the notebook, so the reported results can be reproduced.
+| File | Role |
+|------|------|
+| `tokenizer.json` | Character-level BPE tokenizer (vocabulary 500) fitted on training text only |
+| `selected_checkpoint.pt` | Lowest-validation-loss weights among the three learning-rate runs (CPU tensors) |
+| `training_histories.json` | Per-step training and validation losses for every configuration |
 
 ### `assets/`
 
-Figures saved by the notebook (loss curves and attention heatmaps). The report embeds the required ones.
+The five figures saved by the notebook (training/validation loss curves, validation-and-gap plot, layer-1 and layer-2 attention heatmaps, before/after attention). The report embeds them.
 
 ### `data/`
 
@@ -71,18 +50,27 @@ Figures saved by the notebook (loss curves and attention heatmaps). The report e
 | `input.txt` | Tiny Shakespeare (1,115,394 characters, 40,000 lines) from Karpathy's char-rnn repository, downloaded 2026-11-21. The notebook reads it from the Colab working directory, or downloads it from the source URL if it was not uploaded, and checks its SHA-256. |
 | `raw-url.txt` | The source URL of `input.txt`. |
 
-### `notebook/submission/` and `notebook/learning/`
+### `notebook/assign3-ms7556.ipynb`
 
-Step notebooks built one PR at a time. Step 0 covers setup and data loading. Later steps add:
+The final consolidated notebook, executed top-to-bottom in Google Colab with all outputs saved. It covers:
 
-1. Positional 80/20 train/validation split, a BPE tokenizer (vocabulary ≤ 500) fitted on training text only, and token windows
-2. A decoder-only Transformer built from basic layers (sinusoidal positions, causal multi-head attention, RMSNorm, feed-forward), with causality checks
-3. A baseline and one controlled change trained under the same step budget, with checkpoint selection by validation cross-entropy
-4. Training and validation loss curves, validation perplexity, attention heatmaps, and a comparison table
+1. Data loading with source URL, download date, and SHA-256 verification
+2. Positional 80/20 split, character-level BPE (vocabulary 500) fitted on training text only, and token windows (`N` = 64)
+3. A decoder-only Transformer built from basic layers (sinusoidal positions, causal multi-head attention, RMSNorm, feed-forward), with both causality checks
+4. Three learning-rate configurations under a fixed 5,000-step budget; checkpoint selection by validation cross-entropy
+5. Loss curves, validation perplexity, attention heatmaps and head statistics, a comparison table, a positional-encoding probe, runtime/memory measurements, an optional sample, and a discussion
 
-### `report/`
+All code, figures, and in-notebook explanations for the submission live here.
 
-Will hold `Assignment3_Report.pdf`, the 5–7 page written report (analysis only; no code) with a page map, embedded figures and tables, AI Tool Usage Disclosure, references, and the Colab link at the end.
+### `report/Assignment3_Report.pdf`
+
+The 7-page written report for submission (analysis only; no code). It includes:
+
+- Title page with author, Colab notebook line, page map for Steps 1–4, and summary
+- Introduction, Methods, Results, Discussion
+- AI Tool Usage Disclosure, References, and the Colab notebook link at the end
+
+Required figures and tables from the notebook are embedded in the PDF. Rebuild with `python report/build_report.py --colab "<url>"` after the consolidated Colab share link is available.
 
 ## Related paths outside this folder
 
