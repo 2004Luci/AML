@@ -166,8 +166,8 @@ Figures used in the PDF must be embedded in the PDF; graders will not open the n
 
 # 10. Final results (Colab run in the submitted notebook)
 
-- Selected: **lr 3e-3**, best validation loss **3.3632** at step 4,300 (PPL **28.88**); final gap 0.605 nats; training time 45–50 s per configuration (excludes ~3 s validation)
-- Runtime: 8.31 ms per training step (~493,000 tokens/s); validation pass 0.06 s (6.2% of run time); GPU peak 185 MB during a step (86 MB already held)
+- Selected: **lr 3e-3**, best validation loss **3.3632** at step 4,300 (PPL **28.88**); final gap 0.605 nats; training time 46–48 s per configuration (excludes ~3 s validation)
+- Runtime: 10.35 ms per training step (~396,000 tokens/s); validation pass 0.07 s (6.3% of run time); GPU peak 185 MB during a step (86 MB already held)
 - Other configs: 3e-4 → 3.4827 / 32.55 at step 4,600 (gap 0.343); 1e-3 → 3.3808 / 29.39 at step 4,300 (gap 0.510)
 - Causality: future attention weight 0; earlier logits unchanged under a future edit; reference attention match within 1e-6
 - Attention: layer-1 heads 1/3/4 are previous-token heads (0.40–0.54); head 2 is broader (distance 7.3); layer-2 heads look further back (5.8–6.7); first-token attention 0.00; uniform entropy 3.64
