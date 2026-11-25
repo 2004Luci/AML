@@ -37,6 +37,7 @@ Local instructions that governed how the notebook and report were produced with 
 | `tokenizer.json` | Character-level BPE tokenizer (vocabulary 500) fitted on training text only |
 | `selected_checkpoint.pt` | Lowest-validation-loss weights among the three learning-rate runs (CPU tensors) |
 | `training_histories.json` | Per-step training and validation losses for every configuration |
+| `comparison.json` | The comparison table (configurations, parameters, training time, best validation loss, PPL) |
 
 ### `assets/`
 

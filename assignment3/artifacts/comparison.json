@@ -1,0 +1,35 @@
+[
+ {
+  "Configuration": "lr 3e-4",
+  "Learning rate": 0.0003,
+  "Parameters": 524660,
+  "Training time (s)": 48.0,
+  "Best step": 4600,
+  "Best val loss": 3.4827,
+  "PPL": 32.55,
+  "Final val loss": 3.4881,
+  "Final gap": 0.343
+ },
+ {
+  "Configuration": "lr 1e-3 (baseline)",
+  "Learning rate": 0.001,
+  "Parameters": 524660,
+  "Training time (s)": 45.6,
+  "Best step": 4300,
+  "Best val loss": 3.3808,
+  "PPL": 29.39,
+  "Final val loss": 3.3943,
+  "Final gap": 0.51
+ },
+ {
+  "Configuration": "lr 3e-3",
+  "Learning rate": 0.003,
+  "Parameters": 524660,
+  "Training time (s)": 46.7,
+  "Best step": 4300,
+  "Best val loss": 3.3632,
+  "PPL": 28.88,
+  "Final val loss": 3.3798,
+  "Final gap": 0.605
+ }
+]
